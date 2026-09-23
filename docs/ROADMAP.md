@@ -21,7 +21,9 @@ Date: 2026-09-23. Target: **Bose NC 700**, Android and Windows. [Research and pr
 
 **Gate P0:** research dossier versioned, sources linked, assumptions labeled, read-only first.
 
-## Phase 1 — safe protocol core (not started)
+## Phase 1 — safe protocol core (in progress; offline foundation tested)
+
+**Completed:** immutable C# and Kotlin BMAP packet parsers, fragmented-stream decoders, matching seven-command read-only allowlists, shared synthetic fixtures, Windows .NET smoke tests and Android Kotlin/JUnit tests. Both languages' test suites and the contract checker passed locally using the project-scoped toolchain. **Still pending:** real-device RFCOMM adapters, timeouts/unsolicited-event routing, hardware GET verification and A2DP sink capture. No headphones were contacted or modified.
 
 - Implement strict BMAP framing, partial response reassembly, bounded timeouts, unsolicited events, disconnect/reconnect and packet-length validation.
 - Add Android Bluetooth and Windows RFCOMM channel-8 adapters (maintain distinct transports from BMAP parser); use SaorCon's real Windows behavior as a regression fixture.

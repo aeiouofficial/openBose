@@ -4,6 +4,8 @@ plugins {
 
 kotlin { jvmToolchain(17) }
 
+repositories { mavenCentral() }
+
 dependencies {
     testImplementation(kotlin("test-junit5"))
     testImplementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
