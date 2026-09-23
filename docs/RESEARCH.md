@@ -1,6 +1,6 @@
 # OpenBose — NC 700 research and source audit
 
-Date: 2026-09-23. Scope: Bose Noise Cancelling Headphones 700 (NC 700), **not** generic Bose headphones. This is source-code and public firmware-archive research; we have **not** connected to or modified the user's device, decrypted firmware or enabled a new codec.
+Updated: 2026-09-24. Scope: Bose Noise Cancelling Headphones 700 (NC 700), **not** generic Bose headphones. Includes source/firmware archive research and a **read-only Windows SDP discovery of the user's paired device**. No verified BMAP GET, decrypted firmware, modified headphone setting or new codec has been achieved. See [Windows device-specific findings](WINDOWS_DIAGNOSTIC.md).
 
 ## Objective
 
@@ -9,6 +9,10 @@ Develop an Android/Windows Bose-control app and investigate whether the NC 700 c
 - **BMAP control plane:** read/change Bose settings over RFCOMM (volume, ANC, EQ, battery).
 - **Host audio plane:** source-device AAC/SBC/other encoding and optional software EQ. A new host encoder or host EQ does **not** add a decoder to the headphones.
 - **Headphone firmware/DSP:** codec decoder, A2DP capabilities, configuration, possible firmware loader. Requires device-specific verification. Never presume codec activation or reversible RAM patching.
+
+## Actual-device transport finding (2026-09-24)
+
+WinRT discovered eight RFCOMM services on the user's paired NC700. Their redacted SDP ProtocolDescriptorList attributes decode to channels **10, 11, 14, 20, 21, 25, 27 and 29**. Neither channel **8** nor standard SPP UUID **00001101** was advertised at that time, despite older NC700 reverse-engineering scripts using channel 8. An explicit Windows BMAP GET refused to send, and a separate 32feet legacy channel-8 connection failed before any command. This difference requires firmware/profile-specific validation rather than blind probing of vendor-specific services. [Full anonymized findings](WINDOWS_DIAGNOSTIC.md).
 
 ## Direct NC 700 reverse-engineering repositories
 

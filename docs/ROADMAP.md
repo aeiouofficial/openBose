@@ -17,13 +17,13 @@ Date: 2026-09-23. Target: **Bose NC 700**, Android and Windows. [Research and pr
 - [x] Verify Goodyear firmware archive, index manifest, and bose-dfu's explicit NC 700 incompatibility.
 - [x] Check listed branches for the named key research repos.
 - [ ] Identify and audit the original repo's other advertised fork if GitHub exposes it.
-- [ ] Establish sanitized **actual-device** baseline; no capture or firmware dump available yet.
+- [~] Establish sanitized **actual-device** baseline: Windows paired-state/SDP enumeration captured and redacted; hardware product/firmware GET, Android AVDTP capture and firmware dump still pending.
 
 **Gate P0:** research dossier versioned, sources linked, assumptions labeled, read-only first.
 
 ## Phase 1 — safe protocol core (in progress; offline foundation tested)
 
-**Completed:** immutable C# and Kotlin BMAP packet parsers, fragmented-stream decoders, matching seven-command read-only allowlists, shared synthetic fixtures, Windows .NET smoke tests and Android Kotlin/JUnit tests. Both languages' test suites and the contract checker passed locally using the project-scoped toolchain. **Still pending:** real-device RFCOMM adapters, timeouts/unsolicited-event routing, hardware GET verification and A2DP sink capture. No headphones were contacted or modified.
+**Completed:** C# and Kotlin BMAP packet parsers and fragmented decoders, matching seven-command read-only allowlists, shared fixtures, Windows .NET smoke tests and Android Kotlin/JUnit tests. Windows read-only CLI, RFCOMM SDP decoder and paired-device WinRT fallback are implemented. **Hardware discovery confirmed no advertised channel 8** on the connected NC700; both WinRT and legacy channel-8 GET attempts failed before a BMAP packet could be sent. No headphone configuration was changed. **Still pending:** authenticated device-specific transport mapping, real BMAP GET/readback, Android AVDTP capture, and more complete cancellation/reconnect tests. See [Windows diagnostic](WINDOWS_DIAGNOSTIC.md).
 
 - Implement strict BMAP framing, partial response reassembly, bounded timeouts, unsolicited events, disconnect/reconnect and packet-length validation.
 - Add Android Bluetooth and Windows RFCOMM channel-8 adapters (maintain distinct transports from BMAP parser); use SaorCon's real Windows behavior as a regression fixture.
