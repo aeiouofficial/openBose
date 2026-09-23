@@ -15,18 +15,18 @@ Develop an Android/Windows Bose-control app and investigate whether the NC 700 c
 | Source | Exact findings | Limitations |
 | --- | --- | --- |
 | [iclemens/bose](https://github.com/iclemens/bose) | Reports **Qualcomm CSRA68105** for NC 700; BMAP commands, Bluetooth RFCOMM channel **8**, USB alternative framing, Wireshark dissector; scripts for identity, firmware information, ANC, EQ read and volume. Firmware-transfer format is partially described. | Research scripts; not a finished cross-platform app or codec loader. |
-| [bosefirmware/Bose-NC700](https://github.com/bosefirmware/Bose-NC700) | **Unchanged fork**: its only listed \`master\` branch and original's only listed \`master\` both resolve to \`fed1311fc84aa53e59053abfc001e5fedade2ef7\`; GitHub comparison returns **identical**, zero changed files; recursive trees match. | Adds no codec code, decoder, RAM loader or firmware-unlock mechanism. |
-| [bosefirmware/SaorCon-Win-BT-QC35-NC700](https://github.com/bosefirmware/SaorCon-Win-BT-QC35-NC700) | Actual Windows NC 700 class in \`SaorCon/BoseDevices.cs\`: RFCOMM channel 8, battery and ANC; NC 700 ANC function \`01:05\`, whereas QC35 uses \`01:06\`. | README documents occasional **Windows RFCOMM receive failure** and early-stage crashes. |
-| [bosefirmware/ced](https://github.com/bosefirmware/ced/tree/master/goodyear) | Archive for NC 700 codename **Goodyear**: eight \`goodyear_encrypted_prod_*.bin\` versions (1.0.9, 1.1.4, 1.2.11, 1.3.1, 1.4.12, 1.5.1, 1.7.0, 1.8.2). \`goodyear/index.xml\` identifies product ID **0x4024**, length and CRC metadata. [Release notes](https://github.com/bosefirmware/ced/blob/master/goodyear/README.md) describe 3-band EQ introduced with 1.4.12, and reported red/white LED problems. | Binary names suggest encryption; content and authenticity have **not** been independently established. No firmware flash recommended. |
+| [bosefirmware/Bose-NC700](https://github.com/bosefirmware/Bose-NC700) | **Unchanged fork**: its only listed `master` branch and original's only listed `master` both resolve to `fed1311fc84aa53e59053abfc001e5fedade2ef7`; GitHub comparison returns **identical**, zero changed files; recursive trees match. | Adds no codec code, decoder, RAM loader or firmware-unlock mechanism. |
+| [bosefirmware/SaorCon-Win-BT-QC35-NC700](https://github.com/bosefirmware/SaorCon-Win-BT-QC35-NC700) | Actual Windows NC 700 class in `SaorCon/BoseDevices.cs`: RFCOMM channel 8, battery and ANC; NC 700 ANC function `01:05`, whereas QC35 uses `01:06`. | README documents occasional **Windows RFCOMM receive failure** and early-stage crashes. |
+| [bosefirmware/ced](https://github.com/bosefirmware/ced/tree/master/goodyear) | Archive for NC 700 codename **Goodyear**: eight `goodyear_encrypted_prod_*.bin` versions (1.0.9, 1.1.4, 1.2.11, 1.3.1, 1.4.12, 1.5.1, 1.7.0, 1.8.2). `goodyear/index.xml` identifies product ID **0x4024**, length and CRC metadata. [Release notes](https://github.com/bosefirmware/ced/blob/master/goodyear/README.md) describe 3-band EQ introduced with 1.4.12, and reported red/white LED problems. | Binary names suggest encryption; content and authenticity have **not** been independently established. No firmware flash recommended. |
 | [bosefirmware/bose-dfu](https://github.com/bosefirmware/bose-dfu) | Its [README](https://github.com/bosefirmware/bose-dfu/blob/main/README.md) **explicitly lists NC 700 as incompatible** because of a different updater protocol. Its [device_ids.rs](https://github.com/bosefirmware/bose-dfu/blob/main/src/device_ids.rs) excludes USB PID **0x40fc**. | Not an NC 700 update or recovery route. Never apply this DFU method to NC 700. |
 
 ### Original repository technical audit
 
 - [BMAP Bluetooth transport](https://github.com/iclemens/bose/blob/master/python/bose_bt.py): Python RFCOMM channel 8; hardcoded example MAC in the CLI must be removed.
-- [BMAP framing](https://github.com/iclemens/bose/blob/master/python/bose_proto.py): four-byte block/function/operator/length prefix. \`OPERATOR_GET=1\`, \`SETGET=2\`, \`START=5\`; do **not** reuse commands without validating return packets, timeouts and firmware version.
+- [BMAP framing](https://github.com/iclemens/bose/blob/master/python/bose_proto.py): four-byte block/function/operator/length prefix. `OPERATOR_GET=1`, `SETGET=2`, `START=5`; do **not** reuse commands without validating return packets, timeouts and firmware version.
 - [ANC and prompts](https://github.com/iclemens/bose/blob/master/python/bose_settings.py): setter examples and language parser. Settings may persist on the headphone.
-- [USB script](https://github.com/iclemens/bose/blob/master/python/bose_usb.py): provides GET requests for firmware identity, battery, ANC and EQ at **settings 01:07**. Its \`parse_bass\` uses the incorrect slice \`data[i*4:4+i*4]\`, and the script references \`parse_prompt_language\` without importing it. **Fix/test offline; do not run as-is against hardware.**
-- [Firmware parser](https://github.com/iclemens/bose/blob/master/firmware/unpack.py): splits container parts including \`APPUHDR5\`, \`PARTDATA\` and \`APPUPFTR\`. It is **not** a decryptor, arbitrary-code loader, or patch installer. The original README documents partial firmware-transfer packet structure, **not** a safe downgrade/recovery mechanism.
+- [USB script](https://github.com/iclemens/bose/blob/master/python/bose_usb.py): provides GET requests for firmware identity, battery, ANC and EQ at **settings 01:07**. Its `parse_bass` uses the incorrect slice `data[i*4:4+i*4]`, and the script references `parse_prompt_language` without importing it. **Fix/test offline; do not run as-is against hardware.**
+- [Firmware parser](https://github.com/iclemens/bose/blob/master/firmware/unpack.py): splits container parts including `APPUHDR5`, `PARTDATA` and `APPUPFTR`. It is **not** a decryptor, arbitrary-code loader, or patch installer. The original README documents partial firmware-transfer packet structure, **not** a safe downgrade/recovery mechanism.
 
 ## Additional app and protocol references
 
@@ -47,21 +47,21 @@ GitHub branch-list endpoint returned the following **only branches listed** on 2
 
 | Repository | Listed branches |
 | --- | --- |
-| iclemens/bose | \`master\` |
-| bosefirmware/Bose-NC700 | \`master\` |
-| bosefirmware/OpenBose-Connect | \`master\` |
-| bosefirmware/BoseConnect-Linux_based-connect | \`master\` |
-| bosefirmware/BoseConnect-Android_Basic-control | \`master\` |
-| bosefirmware/SaorCon-Win-BT-QC35-NC700 | \`main\` |
-| bosefirmware/bose-dfu | \`main\` |
-| bosefirmware/bosectl | \`main\` |
-| bosefirmware/bosectl-qt | \`main\` |
-| bosefirmware/ced | \`master\` |
-| bosefirmware/ced-old | \`master\` |
-| bosefirmware/cd-updates | \`master\` |
-| bosefirmware/bosebuild | \`master\` |
+| iclemens/bose | `master` |
+| bosefirmware/Bose-NC700 | `master` |
+| bosefirmware/OpenBose-Connect | `master` |
+| bosefirmware/BoseConnect-Linux_based-connect | `master` |
+| bosefirmware/BoseConnect-Android_Basic-control | `master` |
+| bosefirmware/SaorCon-Win-BT-QC35-NC700 | `main` |
+| bosefirmware/bose-dfu | `main` |
+| bosefirmware/bosectl | `main` |
+| bosefirmware/bosectl-qt | `main` |
+| bosefirmware/ced | `master` |
+| bosefirmware/ced-old | `master` |
+| bosefirmware/cd-updates | `master` |
+| bosefirmware/bosebuild | `master` |
 
-The original GitHub metadata reports **two forks**; one (\`bosefirmware/Bose-NC700\`) is directly verified. The identity/content of the other advertised fork remains unverified because the fork-list endpoint was unavailable to the active GitHub integration. Do not call that fork audited.
+The original GitHub metadata reports **two forks**; one (`bosefirmware/Bose-NC700`) is directly verified. The identity/content of the other advertised fork remains unverified because the fork-list endpoint was unavailable to the active GitHub integration. Do not call that fork audited.
 
 ## Codec feasibility: findings versus hypotheses
 

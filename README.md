@@ -8,6 +8,10 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 
 - [Research dossier](docs/RESEARCH.md) — NC 700 chipset and BMAP protocol findings; identical `iclemens/bose` fork comparison; relevant Android/Windows/Linux projects; Goodyear firmware archive; DFU incompatibility; audited branches; confirmed facts versus unverified codec hypotheses.
 - [Roadmap and acceptance gates](docs/ROADMAP.md) — read-only parser, cross-platform controls, temporary host-side EQ, offline firmware/codec feasibility and conditional activation testing.
+- [Deep source audit](docs/DEEP_RESEARCH_2026-09-23.md) — hardware, related app repositories, archived Goodyear firmware and evidence gaps.
+- [Android and Windows feasibility](docs/PLATFORM_FEASIBILITY.md) — platform architecture, permissions, transport and temporary audio processing.
+- [Codec feasibility](docs/CODEC_FEASIBILITY.md) — aptX/aptX HD chip-vs-product evidence and required validation gates.
+- [Capture procedure](docs/PROTOCOL_CAPTURE_PLAN.md) — privacy-conscious baseline and reproducible Android A2DP/BMAP capture.
 
 ## Objectives
 
@@ -37,3 +41,7 @@ See the research dossier for evidence, detailed comparisons and branch audit.
 - [`reference/original-bose-code`](https://github.com/aeiouofficial/openBose/tree/reference/original-bose-code) preserves the complete original code, Wireshark script, firmware parser and project documentation at the pre-cleanup commit. Treat this as a **read-only reference**, not an integration branch.
 - Bring back only an audited file or function into a feature branch, for example: `git restore --source reference/original-bose-code -- python/bose_proto.py`. Review and test before merging a focused pull request into `master`.
 - **Do not merge the reference branch wholesale.** Start with the offline read-only BMAP parser as described in [the roadmap](docs/ROADMAP.md).
+
+## Local workspace
+
+**All** OpenBose project work, source checkouts, caches, diagnostic captures and temporary files belong under `D:\openBose`. Before running local build, capture or analysis commands in PowerShell, dot-source `. .\scripts\workspace-env.ps1` to redirect TEMP/TMP and tool-specific caches into `D:\openBose\.tmp`. Keep raw logs under the Git-ignored `captures/private/`; do not create a second checkout or a project scratch directory elsewhere.
