@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "provenance": "SYNTHETIC unit-test vectors only; NOT recorded from any NC700.",
+  "fullFrames": [
+    {"name":"battery_status_80pct","hex":"02 02 03 01 50","block":2,"function":2,"operator":3,"payloadHex":"50"},
+    {"name":"firmware_status_1_8_2","hex":"00 05 03 05 31 2e 38 2e 32","block":0,"function":5,"operator":3,"payloadHex":"31 2e 38 2e 32"},
+    {"name":"battery_error_invalid_state","hex":"02 02 04 01 0a","block":2,"function":2,"operator":4,"payloadHex":"0a"}
+  ],
+  "fragmented": {
+    "name":"battery_and_firmware_split_at_arbitrary_byte",
+    "chunksHex":["02 02 03","01 50 00 05 03 05 31","2e 38 2e 32"],
+    "expectedFramesHex":["02 02 03 01 50","00 05 03 05 31 2e 38 2e 32"]
+  },
+  "invalidSingleFrames": [
+    {"name":"truncated","hex":"02 02 03 02 50"},
+    {"name":"trailing_byte","hex":"02 02 03 01 50 ff"},
+    {"name":"short_header","hex":"02 02 03"}
+  ],
+  "blockedOutbound": ["01 05 02 02 00 01","03 02 01 00","01 06 01 00","02 02 01 01 00","02 02 05 00"]
+}
