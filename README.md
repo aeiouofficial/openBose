@@ -1,35 +1,32 @@
-Bose Protocol
--------------
+# openBose
 
-This repository tracks my efforts to reverse engineer the Bose NC 700 firmware upgrade process. The goal is to make it easy to downgrade the device to an older version.
+Android + Windows Bose NC 700 control app and research project investigating whether the headphones can support additional Bluetooth audio codecs (such as aptX or LDAC) beyond their reported AAC/SBC implementation.
 
-The *wireshark* directory contains a protocol dissector which makes it easier to view the USB firmware upgrade.
+**Status (2026-09-23): research and implementation plan committed. No codec unlock, device modification, or live-device validation has been performed.**
 
-The *python* directory contains some test code that attempts to interface with the NC 700 over either Bluetooth or USB. The protocol is identical, except that messages sent over USB have [0x0c, LL, LL] prepended where LL is the (big endian) packet length. Messaged received have [0x0d] prepended.
+## Project documentation
 
-Firmware update
----------------
+- [Research dossier](docs/RESEARCH.md) — NC 700 chipset and BMAP protocol findings; identical `iclemens/bose` fork comparison; relevant Android/Windows/Linux projects; Goodyear firmware archive; DFU incompatibility; audited branches; confirmed facts versus unverified codec hypotheses.
+- [Roadmap and acceptance gates](docs/ROADMAP.md) — read-only parser, cross-platform controls, temporary host-side EQ, offline firmware/codec feasibility and conditional activation testing.
 
-The (supposedly encrypted) firmware binary is sent as-is (including APPUHDR and APPUPFTR) to the device. Data is sent using function 0x03 0x08 and operation 0x05 (start). 
+## Objectives
 
-[0x03, 0x08, 0x05, 0xff, 0x00, data...]
+1. Reimplement useful Bose-app controls for the **Bose NC 700** on Android and Windows.
+2. Provide optional **temporary host-side EQ** that leaves headphones' persistent settings unchanged.
+3. Investigate actual **headphone-side decoder and A2DP support** for higher-quality Bluetooth codecs. A software EQ or a phone-side encoder does not count as a headphone codec unlock.
+4. Keep unknown firmware writes, unsupported update protocols and unverified loader experiments out of the normal application.
 
-with 0xff being the length of the payload (including the offset) and 0x00 seems to be some kind of package number.
+## Source projects
 
-Hardware
---------
+- [iclemens/bose](https://github.com/iclemens/bose) — direct NC 700 BMAP and firmware-container reverse engineering.
+- [bosefirmware/Bose-NC700](https://github.com/bosefirmware/Bose-NC700) — unchanged fork of the above.
+- [bosefirmware/SaorCon-Win-BT-QC35-NC700](https://github.com/bosefirmware/SaorCon-Win-BT-QC35-NC700) — working Windows NC 700 control reference.
+- [bosefirmware/OpenBose-Connect](https://github.com/bosefirmware/OpenBose-Connect) — Python/BlueZ protocol and interface reference.
+- [bosefirmware/BoseConnect-Android_Basic-control](https://github.com/bosefirmware/BoseConnect-Android_Basic-control) — **QC35-specific** Kotlin Bluetooth reference.
+- [bosefirmware/ced](https://github.com/bosefirmware/ced/tree/master/goodyear) — archived Goodyear NC 700 firmware and update manifests.
+- [bosefirmware/bose-dfu](https://github.com/bosefirmware/bose-dfu) — firmware updater **incompatible with NC 700**.
+- [bosefirmware/bosectl](https://github.com/bosefirmware/bosectl) — multi-language BMAP tooling (NC 700 catalogued, not yet supported/verified).
 
- - Qualcomm CSRA68105
+See the research dossier for evidence, detailed comparisons and branch audit.
 
-Firmware format
----------------
-
-Contains multiple parts, each part starts with an 8 byte identifier, followed by a 4 byte length. The parts I've seen so far:
- - APPUHDR# with # the version number
- - PARTDATA with 2 byte part type and 2 byte part number followed by data
- - APPUPFTR footer
-
-Useful resources:
-
-- https://developer.qualcomm.com/qfile/34081/csr102x_otau_overview.pdf
-- https://github.com/bosefirmware/BoseConnect-Linux_based-connect
+**Next:** Implement and test an offline BMAP parser with a strict read-only command allowlist, then capture actual NC 700 A2DP codec advertisements without modifying the headphones.
