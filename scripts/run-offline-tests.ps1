@@ -8,6 +8,8 @@ function Assert-LastExit([string]$step) {
 Write-Output '[1/3] Shared BMAP contract (no Bluetooth I/O)'
 python (Join-Path $PSScriptRoot 'check-contract.py')
 Assert-LastExit 'Shared BMAP contract'
+python -O (Join-Path $PSScriptRoot 'test_contract.py')
+Assert-LastExit 'Optimized-mode BMAP negative fixtures'
 if (-not $SkipWindows) {
     Write-Output '[2/3] Windows .NET BMAP smoke tests'
     dotnet run --project (Join-Path $repo 'windows\tests\OpenBose.Protocol.SmokeTests\OpenBose.Protocol.SmokeTests.csproj') -c Release
