@@ -1,0 +1,12 @@
+.tmp/
+.build/
+.cache/
+captures/private/
+**/build/
+**/.gradle/
+**/.idea/
+*.log
+*.apk
+*.aab
+*.msix
+*.pdb
