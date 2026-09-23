@@ -30,3 +30,10 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 See the research dossier for evidence, detailed comparisons and branch audit.
 
 **Next:** Implement and test an offline BMAP parser with a strict read-only command allowlist, then capture actual NC 700 A2DP codec advertisements without modifying the headphones.
+
+## Branch workflow
+
+- [`master`](https://github.com/aeiouofficial/openBose/tree/master) is the clean project branch: README and research/roadmap documentation only until new code passes review.
+- [`reference/original-bose-code`](https://github.com/aeiouofficial/openBose/tree/reference/original-bose-code) preserves the complete original code, Wireshark script, firmware parser and project documentation at the pre-cleanup commit. Treat this as a **read-only reference**, not an integration branch.
+- Bring back only an audited file or function into a feature branch, for example: `git restore --source reference/original-bose-code -- python/bose_proto.py`. Review and test before merging a focused pull request into `master`.
+- **Do not merge the reference branch wholesale.** Start with the offline read-only BMAP parser as described in [the roadmap](docs/ROADMAP.md).
