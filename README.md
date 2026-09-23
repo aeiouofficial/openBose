@@ -2,7 +2,7 @@
 
 Android + Windows Bose NC 700 control app and research project investigating whether the headphones can support additional Bluetooth audio codecs (such as aptX or LDAC) beyond their reported AAC/SBC implementation.
 
-**Status (2026-09-23): research and implementation plan committed. No codec unlock, device modification, or live-device validation has been performed.**
+**Status (2026-09-24): Android Kotlin and Windows .NET BMAP protocol test suites pass; the Windows read-only diagnostic successfully enumerates the actual paired NC700's SDP services. On this firmware/Windows pairing, channel 8 is **not advertised**, so live BMAP GET remains blocked pending transport identification. No headphone settings or firmware were modified and no additional codec has been activated.**
 
 ## Project documentation
 
@@ -12,6 +12,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Android and Windows feasibility](docs/PLATFORM_FEASIBILITY.md) — platform architecture, permissions, transport and temporary audio processing.
 - [Codec feasibility](docs/CODEC_FEASIBILITY.md) — aptX/aptX HD chip-vs-product evidence and required validation gates.
 - [Capture procedure](docs/PROTOCOL_CAPTURE_PLAN.md) — privacy-conscious baseline and reproducible Android A2DP/BMAP capture.
+- [Live Windows RFCOMM findings](docs/WINDOWS_DIAGNOSTIC.md) — tested read-only CLI, paired-device WinRT fallback, actual SDP channel mapping and the channel-8 compatibility blocker.
 
 ## Objectives
 
