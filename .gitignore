@@ -10,3 +10,7 @@ captures/private/
 *.aab
 *.msix
 *.pdb
+**/bin/
+**/obj/
+.vs/
+.gradle/

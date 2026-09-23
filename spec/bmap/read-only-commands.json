@@ -1,0 +1,17 @@
+{
+  "schemaVersion": 1,
+  "device": "Bose Noise Cancelling Headphones 700",
+  "productId": "0x4024",
+  "transport": "Bluetooth Classic RFCOMM",
+  "operation": "GET (0x01) only; all other operators forbidden",
+  "researchNote": "Addresses from iclemens/bose; validate read responses on the actual NC700 firmware.",
+  "commands": [
+    {"name":"bmap_version","block":0,"function":1,"requestHex":"00 01 01 00"},
+    {"name":"function_blocks","block":0,"function":2,"requestHex":"00 02 01 00"},
+    {"name":"product_id","block":0,"function":3,"requestHex":"00 03 01 00"},
+    {"name":"firmware_version","block":0,"function":5,"requestHex":"00 05 01 00"},
+    {"name":"noise_control","block":1,"function":5,"requestHex":"01 05 01 00"},
+    {"name":"equalizer","block":1,"function":7,"requestHex":"01 07 01 00"},
+    {"name":"battery","block":2,"function":2,"requestHex":"02 02 01 00"}
+  ]
+}
