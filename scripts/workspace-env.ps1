@@ -16,7 +16,8 @@ $env:POETRY_CACHE_DIR = Join-Path $Scratch 'poetry'
 $env:NUGET_PACKAGES = Join-Path $Scratch 'nuget-packages'
 $env:DOTNET_CLI_HOME = Join-Path $Scratch 'dotnet-home'
 $env:DOTNET_CLI_TELEMETRY_OPTOUT = '1'
-$env:RUSTUP_HOME = Join-Path $Scratch 'rustup'
-$env:PIP_BUILD_TRACKER = Join-Path $Scratch 'pip-build-tracker'
+# Preserve any preinstalled RUSTUP_HOME/toolchain; only project build artifacts are redirected.
+# pip creates its own per-run build tracker under TEMP; do not set PIP_BUILD_TRACKER.
+Remove-Item Env:PIP_BUILD_TRACKER -ErrorAction SilentlyContinue
 Set-Location -LiteralPath $ProjectRoot
 Write-Host "OpenBose workspace: $ProjectRoot; temp/cache: $Scratch"
