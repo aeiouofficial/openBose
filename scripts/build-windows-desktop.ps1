@@ -15,7 +15,7 @@ if (-not (Test-Path -LiteralPath $project)) { throw "Desktop project not found: 
 Write-Output 'Building native Windows desktop with strict D-only environment...'
 dotnet build $project -c Release --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Windows WPF build failed.' }
-dotnet run --project $tests -c Release --no-restore
+dotnet run --project $tests -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Windows protocol smoke tests failed.' }
 dotnet run --project $cli -c Release -- --help
 if ($LASTEXITCODE -ne 0) { throw 'Read-only diagnostic CLI help smoke failed.' }
