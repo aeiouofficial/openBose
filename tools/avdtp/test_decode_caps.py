@@ -32,7 +32,7 @@ class DecoderTests(unittest.TestCase):
     def test_vendor_aptx_hd(self) -> None:
         got = decode("07 0D 00 FF D7 00 00 00 24 00 20 00 00 00 00")
         self.assertEqual(got["codec"]["codec"], "aptX HD")
-        self.assertEqual(got["codec"]["codec_specific_hex"], "20")
+        self.assertEqual(got["codec"]["codec_specific_hex"], "20 00 00 00 00")
 
     def test_vendor_ldac(self) -> None:
         got = decode("07 0A 00 FF 2D 01 00 00 AA 00 30 03")
