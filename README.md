@@ -12,6 +12,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Android and Windows feasibility](docs/PLATFORM_FEASIBILITY.md) — platform architecture, permissions, transport and temporary audio processing.
 - [Codec feasibility](docs/CODEC_FEASIBILITY.md) — aptX/aptX HD chip-vs-product evidence and required validation gates.
 - [Capture procedure](docs/PROTOCOL_CAPTURE_PLAN.md) — privacy-conscious baseline and reproducible Android A2DP/BMAP capture.
+- [Offline codec evidence tool](docs/AVDTP_OFFLINE_ANALYSIS.md) — parse one sanitized AVDTP SEP capability/configuration record (SBC, AAC, aptX, aptX HD, LDAC); synthetic test fixtures; **no device I/O**.
 - [Live Windows RFCOMM findings](docs/WINDOWS_DIAGNOSTIC.md) — tested read-only CLI, paired-device WinRT fallback, actual SDP channel mapping and the channel-8 compatibility blocker.
 
 ## Objectives

@@ -45,7 +45,9 @@ Date: 2026-09-23. Target: **Bose NC 700**, Android and Windows. [Research and pr
 
 **Gate P2:** Android/Windows real-device acceptance tests, verified persistence classification, host EQ bypass A/B comparison, headphone-stored EQ unchanged by temporary mode.
 
-## Phase 3 — codec evidence, offline first (not started)
+## Phase 3 — codec evidence, offline first (offline analyzer added; device capture pending)
+
+**New foundation:** a standard-library Python decoder and synthetic unit tests identify SBC, AAC, aptX, aptX HD and LDAC from the AVDTP Media Codec service category for **one manually identified SEP**. It rejects truncated TLVs and unknown vendor interpretations, and never accesses headphones or writes capture files. GitHub source is staged for local tests; no actual AVDTP packet has been captured yet. See [offline analysis](AVDTP_OFFLINE_ANALYSIS.md).
 
 1. Collect actual A2DP sink SEP advertisements/negotiation on Android and Windows, with firmware and Bluetooth adapter versions.
 2. Fetch archival Goodyear images into an isolated offline research workspace; check size/CRC against index, split container, inspect architecture, encryption and signature structure.
@@ -79,4 +81,4 @@ Date: 2026-09-23. Target: **Bose NC 700**, Android and Windows. [Research and pr
 
 ## Next work item
 
-Implement Phase 1 **offline BMAP parser with an immutable read-only command allowlist** and replay fixtures, then build a non-mutating device discovery/codec capture procedure. Only then connect to the real headphones.
+Capture a **sanitized Android HCI/AVDTP trace** for the actual NC 700 and its current firmware; manually extract each audio sink SEP's service-capability TLVs plus the actual SetConfiguration. Validate them with the project-local offline decoder and correlate with actual AAC playback. Continue the Android read-only UI and Windows transport identification independently. No speculative BMAP traffic on unverified Windows vendor RFCOMM channels.
