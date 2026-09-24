@@ -11,7 +11,7 @@
       <RowDefinition Height="Auto"/>
     </Grid.RowDefinitions>
     <StackPanel>
-      <TextBlock Text="OPENBOSE" FontSize="14" FontWeight="Bold" Foreground="#4BCAFC" LetterSpacing="3"/>
+      <TextBlock Text="OPENBOSE" FontSize="14" FontWeight="Bold" Foreground="#4BCAFC"/>
       <TextBlock Text="NC 700 control &amp; codec laboratory" FontSize="26" FontWeight="SemiBold" Margin="0,8,0,6"/>
       <TextBlock Text="READ-ONLY RESEARCH  •  Unknown control channels and all firmware writes are disabled."
         FontSize="12" Foreground="#F7C77A" Margin="0,0,0,22"/>
