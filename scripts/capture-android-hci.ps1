@@ -33,6 +33,7 @@ if ($LASTEXITCODE -ne 0) {
 if (-not (Test-Path -LiteralPath $zip)) {
     Write-Warning 'ADB finished but no ZIP at expected path; inspect the session directory for an alternative output filename.'
 } else {
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
     $archive = [System.IO.Compression.ZipFile]::OpenRead($zip)
     try {
         $snoop = @($archive.Entries | Where-Object {
