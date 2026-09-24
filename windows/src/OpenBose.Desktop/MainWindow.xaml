@@ -1,0 +1,88 @@
+<Window x:Class="OpenBose.Desktop.MainWindow"
+  xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+  Title="OpenBose — NC 700 diagnostics" Width="1030" Height="730"
+  MinWidth="820" MinHeight="600" WindowStartupLocation="CenterScreen"
+  Background="#0B1727" Foreground="#E1EAF7" FontFamily="Segoe UI">
+  <Grid Margin="24">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <StackPanel>
+      <TextBlock Text="OPENBOSE" FontSize="14" FontWeight="Bold" Foreground="#4BCAFC" LetterSpacing="3"/>
+      <TextBlock Text="NC 700 control &amp; codec laboratory" FontSize="26" FontWeight="SemiBold" Margin="0,8,0,6"/>
+      <TextBlock Text="READ-ONLY RESEARCH  •  Unknown control channels and all firmware writes are disabled."
+        FontSize="12" Foreground="#F7C77A" Margin="0,0,0,22"/>
+    </StackPanel>
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="310"/>
+        <ColumnDefinition Width="16"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Border Grid.Column="0" Background="{StaticResource Panel}" Padding="18" CornerRadius="9">
+        <DockPanel LastChildFill="True">
+          <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="PAIRED DEVICES" FontSize="14" FontWeight="Bold"/>
+            <TextBlock Text="Nothing connects automatically." FontSize="12" Foreground="#ABC0D7" Margin="0,5,0,10"/>
+            <Button x:Name="RefreshButton" Content="Refresh paired devices" Click="Refresh_Click"/>
+          </StackPanel>
+          <ListBox x:Name="DeviceList" Background="#172E48" Foreground="White"
+            BorderBrush="#37506A" BorderThickness="1" Margin="0,13,0,0"
+            SelectionChanged="DeviceList_SelectionChanged"
+            HorizontalContentAlignment="Stretch"/>
+        </DockPanel>
+      </Border>
+      <Border Grid.Column="2" Background="{StaticResource Panel}" Padding="20" CornerRadius="9">
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+          <StackPanel>
+            <TextBlock Text="DEVICE DIAGNOSTICS" FontSize="15" FontWeight="Bold"/>
+            <TextBlock x:Name="SelectedDevice" Text="Select a paired device to inspect its advertised services."
+              Foreground="#B9D5E8" Margin="0,12,0,15" TextWrapping="Wrap" FontSize="13"/>
+            <Button x:Name="ServicesButton" Content="Inspect Bluetooth services (SDP)" Click="Services_Click"
+              IsEnabled="False"/>
+            <TextBlock Text="RFCOMM services" Margin="0,15,0,8" FontWeight="Bold"/>
+            <TextBox x:Name="ServicesText" Text="No services queried." IsReadOnly="True"
+              FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"
+              VerticalScrollBarVisibility="Auto" Height="130" Padding="9"
+              Background="#172E48" Foreground="#D6EEFF" BorderBrush="#365574"/>
+            <TextBlock Text="Bose BMAP diagnostic read" FontWeight="Bold" Margin="0,18,0,5"/>
+            <TextBlock Text="Enabled only for a paired NC 700 if SDP advertises the researched channel 8."
+              Foreground="#F7C77A" TextWrapping="Wrap" FontSize="12"/>
+            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+              <ComboBox x:Name="CommandList" Width="205" Height="36" VerticalAlignment="Bottom"
+                Background="#1D3B56" Foreground="#10243B" SelectedIndex="0">
+                <ComboBoxItem Content="Product ID" Tag="product_id"/>
+                <ComboBoxItem Content="Firmware version" Tag="firmware_version"/>
+                <ComboBoxItem Content="Battery" Tag="battery"/>
+                <ComboBoxItem Content="Noise cancellation" Tag="noise_control"/>
+                <ComboBoxItem Content="Headphone EQ" Tag="equalizer"/>
+                <ComboBoxItem Content="BMAP version" Tag="bmap_version"/>
+                <ComboBoxItem Content="Function blocks" Tag="function_blocks"/>
+              </ComboBox>
+              <Button x:Name="QueryButton" Content="Read device" Margin="12,0,0,0"
+                Click="Query_Click" IsEnabled="False"/>
+            </StackPanel>
+            <TextBlock x:Name="ReadResult" Text="No request sent." Margin="0,12,0,0"
+              FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"/>
+            <Border Margin="0,24,0,0" Background="#1B344C" Padding="14" CornerRadius="6">
+              <StackPanel>
+                <TextBlock Text="CODEC LAB" Foreground="#69D0FA" FontWeight="Bold"/>
+                <TextBlock Text="Codec advertisement requires an Android AVDTP capture. Showing aptX or LDAC on a phone does not establish NC 700 support."
+                  TextWrapping="Wrap" Margin="0,7,0,0" Foreground="#DAE9F8"/>
+                <TextBlock Text="Native EQ writes, advanced codecs and firmware update are unavailable until validated on actual hardware."
+                  TextWrapping="Wrap" Margin="0,8,0,0" Foreground="#F7C77A"/>
+              </StackPanel>
+            </Border>
+          </StackPanel>
+        </ScrollViewer>
+      </Border>
+    </Grid>
+    <DockPanel Grid.Row="2" Margin="0,13,0,0">
+      <TextBlock x:Name="Status" Text="Ready — no Bluetooth requests sent." FontSize="12"
+        Foreground="#A5C9DE"/>
+    </DockPanel>
+  </Grid>
+</Window>
