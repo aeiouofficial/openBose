@@ -1,0 +1,58 @@
+name: Android debug APK and lint
+
+on:
+  pull_request:
+    paths:
+      - "android/**"
+      - "scripts/**"
+      - ".github/workflows/android-app.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-app-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  debug-apk:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    env:
+      ANDROID_HOME: ${{ github.workspace }}/.tmp/android-sdk
+      ANDROID_SDK_ROOT: ${{ github.workspace }}/.tmp/android-sdk
+      ANDROID_USER_HOME: ${{ github.workspace }}/.tmp/android-user
+      GRADLE_USER_HOME: ${{ github.workspace }}/.tmp/gradle
+      TMPDIR: ${{ github.workspace }}/.tmp
+      JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ github.workspace }}/.tmp -Duser.home=${{ github.workspace }}/.tmp/home
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare project-local directories
+        run: mkdir -p .tmp/{android-sdk,android-user,gradle,home}
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - name: Install the pinned Android platform
+        run: sdkmanager --install 'platforms;android-35' 'build-tools;35.0.0'
+      - name: Compile, unit-test and lint
+        run: |
+          chmod +x android/gradlew
+          ./android/gradlew -p android -PwithAndroidApp=true --no-daemon --console plain :bmap:test :app:assembleDebug :app:lintDebug
+      - name: Audit package permissions
+        shell: bash
+        run: |
+          APK=android/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump permissions "$APK" | tee .tmp/apk-permissions.txt
+          if grep -E "uses-permission.*(INTERNET|RECORD_AUDIO|WRITE_EXTERNAL_STORAGE|BLUETOOTH_SCAN|ACCESS_FINE_LOCATION)" .tmp/apk-permissions.txt; then
+            echo "Unexpected Android permission requested"; exit 1
+          fi
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openbose-readonly-android-debug
+          path: android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+          retention-days: 7
