@@ -12,6 +12,11 @@ The Python program takes **only one SEP's AVDTP Service Capabilities TLV list**.
 
 1. Dot-source the project-local PowerShell workspace-env script before running any tool. All generated files belong under D:\openBose.
 2. Follow [the Android HCI capture plan](PROTOCOL_CAPTURE_PLAN.md), retaining the raw bugreport and BTSnoop under D:\openBose\captures\private. Disable HCI logging afterward; never commit raw identifiers or unrelated traffic.
+   Once snooping is enabled and the NC 700 has reconnected with audio playback, the optional, explicitly invoked project-local capture helper is:
+
+       & .\scripts\capture-android-hci.ps1 -DeviceSerial "<YOUR_ADB_SERIAL>" -SessionName nc700
+
+   This only collects an Android bugreport; it does not toggle snooping or touch Bose settings. Review private captured data locally before sharing anything.
 3. In Wireshark identify the NC 700's **audio sink SEP**, GetCapabilities/GetAllCapabilities **accept** message and SetConfiguration. Verify packet direction independently, not from a presumed codec identity.
 4. Extract only Service Capabilities TLV bytes for **one SEP**: category, length and value. Exclude AVDTP signaling headers, ACP/INT SEID and HCI/L2CAP headers. Do not concatenate separate SEPs.
 5. Run the decoder once per advertised sink SEP and once on the actual configuration, explicitly specifying role and message kind.
