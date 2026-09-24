@@ -10,6 +10,9 @@ python (Join-Path $PSScriptRoot 'check-contract.py')
 Assert-LastExit 'Shared BMAP contract'
 python -O (Join-Path $PSScriptRoot 'test_contract.py')
 Assert-LastExit 'Optimized-mode BMAP negative fixtures'
+Write-Output '[offline] AVDTP synthetic codec decoder (no device I/O)'
+python -B -m unittest discover -s (Join-Path $repo 'tools\avdtp') -p 'test_*.py' -v
+Assert-LastExit 'AVDTP synthetic decoder tests'
 if (-not $SkipWindows) {
     Write-Output '[2/3] Windows .NET BMAP smoke tests'
     dotnet run --project (Join-Path $repo 'windows\tests\OpenBose.Protocol.SmokeTests\OpenBose.Protocol.SmokeTests.csproj') -c Release
