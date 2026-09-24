@@ -3,6 +3,11 @@ plugins {
     kotlin("android")
 }
 
+repositories {
+    google()
+    mavenCentral()
+}
+
 android {
     namespace = "dev.openbose.app"
     compileSdk = 35
