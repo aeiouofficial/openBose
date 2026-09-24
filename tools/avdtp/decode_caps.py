@@ -21,6 +21,13 @@ VENDOR_CODECS = {
     (0x0000012D, 0x00AA): "LDAC",
 }
 MAX_PAYLOAD = 4096
+# Codec-specific IE sizes (BlueZ a2dp-codecs.h), exclusive of headers/IDs.
+STANDARD_IE_SIZES = {0x00: 4, 0x01: 4, 0x02: 6}
+VENDOR_IE_SIZES = {
+    (0x0000004F, 0x0001): 1,  # aptX: frequency/channel byte
+    (0x000000D7, 0x0024): 5,  # aptX HD: aptX byte + four reserved bytes
+    (0x0000012D, 0x00AA): 2,  # LDAC: frequency and channel bytes
+}
 
 
 class CapabilityError(ValueError):
@@ -77,7 +84,19 @@ def parse_capabilities(data: bytes, *, peer_role: str, message_kind: str) -> dic
             raise CapabilityError("Media Codec record must contain media type and codec type.")
         media_type = value[0] >> 4
         reserved = value[0] & 0x0F
+        if media_type != 0:
+            raise CapabilityError(
+                "Non-audio SEP: codec IDs are not portable across media types."
+            )
+        if reserved:
+            raise CapabilityError("Reserved bits in Media Codec media-type byte are nonzero.")
         codec_type = value[1]
+        expected_standard = STANDARD_IE_SIZES.get(codec_type)
+        if expected_standard is not None and len(value[2:]) != expected_standard:
+            raise CapabilityError(
+                f"{STANDARD_CODECS[codec_type]} requires exactly "
+                f"{expected_standard} codec-specific bytes; got {len(value[2:])}."
+            )
         codec = {
             "media_type": {0: "audio", 1: "video", 2: "multimedia"}.get(
                 media_type, f"unknown 0x{media_type:X}"
@@ -86,10 +105,6 @@ def parse_capabilities(data: bytes, *, peer_role: str, message_kind: str) -> dic
             "codec": STANDARD_CODECS.get(codec_type, f"Unknown standard 0x{codec_type:02X}"),
             "codec_specific_hex": value[2:].hex(" ").upper(),
         }
-        if reserved:
-            warnings.append("Reserved bits in Media Codec media-type byte are nonzero.")
-        if media_type != 0:
-            warnings.append("Non-audio SEP: do not interpret it as a headphone audio codec.")
         if codec_type == 0xFF:
             if len(value) < 8:
                 raise CapabilityError(
@@ -100,6 +115,12 @@ def parse_capabilities(data: bytes, *, peer_role: str, message_kind: str) -> dic
             vendor_codec = int.from_bytes(value[6:8], "little")
             codec["vendor_id"] = f"0x{vendor:08X}"
             codec["vendor_codec_id"] = f"0x{vendor_codec:04X}"
+            expected_vendor = VENDOR_IE_SIZES.get((vendor, vendor_codec))
+            if expected_vendor is not None and len(value[8:]) != expected_vendor:
+                raise CapabilityError(
+                    f"{VENDOR_CODECS[(vendor, vendor_codec)]} requires exactly "
+                    f"{expected_vendor} codec-specific bytes; got {len(value[8:])}."
+                )
             codec["codec"] = VENDOR_CODECS.get(
                 (vendor, vendor_codec), "Unknown vendor-specific codec"
             )
