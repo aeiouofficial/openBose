@@ -1,0 +1,58 @@
+name: OpenBose offline safety gates
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openbose-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  protocol-and-codec:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare project-local scratch paths
+        shell: bash
+        run: mkdir -p .tmp/{home,gradle,nuget,nuget-scratch,nuget-http,xdg-cache,python-cache}
+      - name: Python contract and AVDTP negative tests
+        shell: bash
+        env:
+          TMPDIR: ${{ github.workspace }}/.tmp
+          PYTHONPYCACHEPREFIX: ${{ github.workspace }}/.tmp/python-cache
+        run: |
+          python3 -B scripts/check-contract.py
+          python3 -O scripts/test_contract.py
+          python3 -B -m unittest discover -s tools/avdtp -p 'test_*.py' -v
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: Windows protocol logic (platform-neutral tests)
+        shell: bash
+        env:
+          TMPDIR: ${{ github.workspace }}/.tmp
+          DOTNET_CLI_HOME: ${{ github.workspace }}/.tmp/home
+          NUGET_PACKAGES: ${{ github.workspace }}/.tmp/nuget
+          NUGET_HTTP_CACHE_PATH: ${{ github.workspace }}/.tmp/nuget-http
+          NUGET_SCRATCH: ${{ github.workspace }}/.tmp/nuget-scratch
+          DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+        run: dotnet run --project windows/tests/OpenBose.Protocol.SmokeTests/OpenBose.Protocol.SmokeTests.csproj -c Release
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Android Kotlin BMAP module unit tests
+        shell: bash
+        env:
+          TMPDIR: ${{ github.workspace }}/.tmp
+          GRADLE_USER_HOME: ${{ github.workspace }}/.tmp/gradle
+          XDG_CACHE_HOME: ${{ github.workspace }}/.tmp/xdg-cache
+          JAVA_TOOL_OPTIONS: -Djava.io.tmpdir=${{ github.workspace }}/.tmp
+        run: ./android/gradlew -p android --no-daemon --console plain :bmap:test
