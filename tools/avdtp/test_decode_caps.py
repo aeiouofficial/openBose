@@ -24,18 +24,18 @@ class DecoderTests(unittest.TestCase):
         self.assertIn("NOT proof", got["interpretation"])
 
     def test_vendor_classic_aptx(self) -> None:
-        got = decode("07 08 00 FF 4F 00 00 00 01 00")
+        got = decode("07 09 00 FF 4F 00 00 00 01 00 21")
         self.assertEqual(got["codec"]["codec"], "aptX")
         self.assertEqual(got["codec"]["vendor_id"], "0x0000004F")
         self.assertEqual(got["codec"]["vendor_codec_id"], "0x0001")
 
     def test_vendor_aptx_hd(self) -> None:
-        got = decode("07 09 00 FF D7 00 00 00 24 00 20")
+        got = decode("07 0D 00 FF D7 00 00 00 24 00 20 00 00 00 00")
         self.assertEqual(got["codec"]["codec"], "aptX HD")
         self.assertEqual(got["codec"]["codec_specific_hex"], "20")
 
     def test_vendor_ldac(self) -> None:
-        got = decode("07 08 00 FF 2D 01 00 00 AA 00")
+        got = decode("07 0A 00 FF 2D 01 00 00 AA 00 30 03")
         self.assertEqual(got["codec"]["codec"], "LDAC")
 
     def test_unknown_vendor_does_not_claim_new_codec(self) -> None:
@@ -46,9 +46,10 @@ class DecoderTests(unittest.TestCase):
     def test_colon_separated_hex(self) -> None:
         self.assertEqual(parse_hex("07:06:00:00:21:15:02:35"), bytes.fromhex("0706000021150235"))
 
-    def test_reserved_and_non_audio_warnings(self) -> None:
-        got = decode("07 02 11 00")
-        self.assertEqual(len(got["warnings"]), 2)
+    def test_reject_non_audio_media_type_and_reserved_bits(self) -> None:
+        for raw in ("07 06 10 00 21 15 02 35", "07 06 01 00 21 15 02 35"):
+            with self.subTest(raw=raw), self.assertRaises(CapabilityError):
+                decode(raw)
 
     def test_reject_truncated_category_header(self) -> None:
         with self.assertRaises(CapabilityError):
@@ -58,13 +59,26 @@ class DecoderTests(unittest.TestCase):
         with self.assertRaises(CapabilityError):
             decode("07 08 00 FF 4F 00 00")
 
+    def test_reject_truncated_standard_codec_ie(self) -> None:
+        for raw in ("07 02 00 00", "07 02 00 02", "07 05 00 00 21 15 02",
+                    "07 09 00 02 40 01 04 00 03 E8 00"):
+            with self.subTest(raw=raw), self.assertRaises(CapabilityError):
+                decode(raw)
+
+    def test_reject_truncated_vendor_codec_ie(self) -> None:
+        for raw in ("07 08 00 FF 4F 00 00 00 01 00",
+                    "07 09 00 FF D7 00 00 00 24 00 20",
+                    "07 08 00 FF 2D 01 00 00 AA 00"):
+            with self.subTest(raw=raw), self.assertRaises(CapabilityError):
+                decode(raw)
+
     def test_reject_short_vendor_ids(self) -> None:
         with self.assertRaises(CapabilityError):
             decode("07 07 00 FF 4F 00 00 00 01")
 
     def test_reject_multiple_media_codec_records_in_one_sep(self) -> None:
         with self.assertRaises(CapabilityError):
-            decode("07 02 00 00 07 02 00 02")
+            decode("07 06 00 00 21 15 02 35 07 08 00 02 40 01 04 00 03 E8")
 
     def test_reject_missing_media_codec_record(self) -> None:
         with self.assertRaises(CapabilityError):
