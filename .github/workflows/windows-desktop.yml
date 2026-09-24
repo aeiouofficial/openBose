@@ -1,0 +1,48 @@
+name: Windows desktop alpha and protocol gates
+
+on:
+  pull_request:
+    paths:
+      - "windows/**"
+      - "scripts/build-windows-desktop.ps1"
+      - ".github/workflows/windows-desktop.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: windows-desktop-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  desktop-alpha:
+    runs-on: windows-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Copy checkout into canonical D-only Windows workspace
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $dest = 'D:\openBose'
+          if (Test-Path -LiteralPath $dest) { throw 'Expected empty hosted Windows runner D:\openBose' }
+          New-Item -ItemType Directory -Path $dest -Force | Out-Null
+          Get-ChildItem -LiteralPath $env:GITHUB_WORKSPACE -Force |
+            Copy-Item -Destination $dest -Recurse -Force
+          if (-not (Test-Path -LiteralPath 'D:\openBose\scripts\assert-d-only.ps1')) {
+            throw 'Missing D-only preflight.'
+          }
+      - name: Compile WPF, run protocol smoke, publish ZIP
+        shell: pwsh
+        run: |
+          & 'D:\openBose\scripts\build-windows-desktop.ps1' -RepositoryRoot 'D:\openBose'
+          if (-not (Test-Path 'D:\openBose\.tmp\dist\openbose-windows-readonly-alpha.zip')) {
+            throw 'No ZIP built.'
+          }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: openbose-windows-readonly-alpha
+          path: D:\openBose\.tmp\dist\openbose-windows-readonly-alpha.zip
+          if-no-files-found: error
+          retention-days: 7
