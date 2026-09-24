@@ -18,8 +18,9 @@ public partial class MainWindow : Window
     private static bool IsNc700(string name)
     {
         string normalized = name.Replace(" ", "", StringComparison.OrdinalIgnoreCase);
-        return (normalized.Contains("Bose", StringComparison.OrdinalIgnoreCase) &&
-                normalized.Contains("700", StringComparison.OrdinalIgnoreCase));
+        return normalized.Contains("BoseNC700", StringComparison.OrdinalIgnoreCase) ||
+            normalized.Contains("BoseHeadphones700", StringComparison.OrdinalIgnoreCase) ||
+            normalized.Contains("BoseNoiseCancellingHeadphones700", StringComparison.OrdinalIgnoreCase);
     }
 
     private bool TrySelection(out string address, out bool isTarget)
@@ -38,6 +39,7 @@ public partial class MainWindow : Window
         if (_busy) return;
         _busy = true;
         RefreshButton.IsEnabled = false;
+        DeviceList.IsEnabled = false;
         ServicesButton.IsEnabled = QueryButton.IsEnabled = false;
         _channelVerified = false;
         DeviceList.Items.Clear();
@@ -83,6 +85,7 @@ public partial class MainWindow : Window
         {
             _busy = false;
             RefreshButton.IsEnabled = true;
+            DeviceList.IsEnabled = true;
         }
     }
 
@@ -107,6 +110,7 @@ public partial class MainWindow : Window
         if (_busy || !TrySelection(out string address, out bool isTarget)) return;
         _busy = true;
         ServicesButton.IsEnabled = QueryButton.IsEnabled = RefreshButton.IsEnabled = false;
+        DeviceList.IsEnabled = false;
         _channelVerified = false;
         ServicesText.Text = "Reading published services only...";
         try
@@ -152,6 +156,7 @@ public partial class MainWindow : Window
             _busy = false;
             ServicesButton.IsEnabled = TrySelection(out _, out _);
             RefreshButton.IsEnabled = true;
+            DeviceList.IsEnabled = true;
         }
     }
 
@@ -164,6 +169,7 @@ public partial class MainWindow : Window
         ReadOnlyCommands.RequireAllowed(request);
         _busy = true;
         QueryButton.IsEnabled = ServicesButton.IsEnabled = RefreshButton.IsEnabled = false;
+        DeviceList.IsEnabled = false;
         ReadResult.Text = "Reading an allowlisted BMAP value...";
         try
         {
@@ -184,6 +190,7 @@ public partial class MainWindow : Window
         {
             _busy = false;
             RefreshButton.IsEnabled = ServicesButton.IsEnabled = true;
+            DeviceList.IsEnabled = true;
             QueryButton.IsEnabled = _channelVerified && TrySelection(out _, out isTarget) && isTarget;
         }
     }
