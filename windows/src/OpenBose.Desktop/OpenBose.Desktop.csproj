@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows10.0.19041.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../OpenBose.Protocol/OpenBose.Protocol.csproj" />
+    <Compile Include="../OpenBose.Diagnostic/WinRtRfcommProbe.cs" Link="Bluetooth/WinRtRfcommProbe.cs" />
+    <Compile Include="../OpenBose.Diagnostic/WinRtDuplexStream.cs" Link="Bluetooth/WinRtDuplexStream.cs" />
+  </ItemGroup>
+</Project>

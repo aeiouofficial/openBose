@@ -14,6 +14,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Capture procedure](docs/PROTOCOL_CAPTURE_PLAN.md) — privacy-conscious baseline and reproducible Android A2DP/BMAP capture.
 - [Offline codec evidence tool](docs/AVDTP_OFFLINE_ANALYSIS.md) — parse one sanitized AVDTP SEP capability/configuration record (SBC, AAC, aptX, aptX HD, LDAC); synthetic test fixtures; **no device I/O**.
 - [Live Windows RFCOMM findings](docs/WINDOWS_DIAGNOSTIC.md) — tested read-only CLI, paired-device WinRT fallback, actual SDP channel mapping and the channel-8 compatibility blocker.
+- [Native Windows desktop](docs/WINDOWS_DESKTOP.md) — WPF paired-device GUI, safe SDP inspection, channel-gated BMAP reads, D-only alpha ZIP build.
 
 ## Objectives
 
