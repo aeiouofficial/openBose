@@ -9,6 +9,8 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../OpenBose.Protocol/OpenBose.Protocol.csproj" />
+    <ProjectReference Include="../OpenBose.Audio/OpenBose.Audio.csproj" />
+    <PackageReference Include="NAudio" Version="2.2.1" />
     <Compile Include="../OpenBose.Diagnostic/WinRtRfcommProbe.cs" Link="Bluetooth/WinRtRfcommProbe.cs" />
     <Compile Include="../OpenBose.Diagnostic/WinRtDuplexStream.cs" Link="Bluetooth/WinRtDuplexStream.cs" />
   </ItemGroup>

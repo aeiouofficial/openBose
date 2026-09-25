@@ -1,7 +1,8 @@
 param([switch]$SkipAndroid, [switch]$SkipWindows)
 $ErrorActionPreference = 'Stop'
 . (Join-Path $PSScriptRoot 'workspace-env.ps1')
-$repo = 'D:\openBose'
+$repo = [IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+& (Join-Path $PSScriptRoot 'check-no-actions.ps1') -RepositoryRoot $repo
 function Assert-LastExit([string]$step) {
     if ($LASTEXITCODE -ne 0) { throw "$step failed (exit $LASTEXITCODE)." }
 }
@@ -17,11 +18,14 @@ if (-not $SkipWindows) {
     Write-Output '[2/3] Windows .NET BMAP smoke tests'
     dotnet run --project (Join-Path $repo 'windows\tests\OpenBose.Protocol.SmokeTests\OpenBose.Protocol.SmokeTests.csproj') -c Release
     Assert-LastExit 'Windows BMAP smoke'
+    Write-Output '[offline] Windows three-band host-EQ DSP safety tests'
+    dotnet run --project (Join-Path $repo 'windows\tests\OpenBose.Audio.SmokeTests\OpenBose.Audio.SmokeTests.csproj') -c Release
+    Assert-LastExit 'Windows host-EQ DSP safety tests'
 }
 if (-not $SkipAndroid) {
     Write-Output '[3/3] Android Kotlin/JUnit BMAP tests'
-    $jdkMarker = Join-Path $repo '.tmp\jdk17\.ready'
-    $portableGradle = Join-Path $repo '.tmp\gradle-dist\gradle-8.13\bin\gradle.bat'
+    $jdkMarker = Join-Path 'D:\openBose\.tmp' 'jdk17\.ready'
+    $portableGradle = Join-Path 'D:\openBose\.tmp' 'gradle-dist\gradle-8.13\bin\gradle.bat'
     $wrapper = Join-Path $repo 'android\gradlew.bat'
     if (-not (Test-Path -LiteralPath $jdkMarker)) {
         throw 'Portable JDK 17 not installed under D:\openBose\.tmp\jdk17. Run scripts/bootstrap-android.ps1 first.'

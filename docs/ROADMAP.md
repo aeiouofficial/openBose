@@ -34,7 +34,9 @@ Date: 2026-09-23. Target: **Bose NC 700**, Android and Windows. [Research and pr
 
 **Gate P1:** automated tests pass and a live device responds to audited GET commands; zero headphone configuration/firmware writes; logs redact MAC and serial.
 
-## Phase 2 — cross-platform settings and temporary EQ (not started)
+## Phase 2 — cross-platform settings and temporary EQ (partially implemented)
+
+Windows now has a locally tested pure .NET temporary host-EQ core with app-owned three-band float PCM processing; a WPF WAV player is being integrated. This is **not** headphone-native EQ, system-wide processing or an activated Bluetooth codec. Android host playback/EQ and validated NC 700 controls are pending. [Windows host EQ design](HOST_EQ_WINDOWS.md).
 
 - Native Android device discovery/status, audited settings and EQ for **app-owned playback** initially.
 - Windows RFCOMM controls plus app-owned playback EQ initially; system-wide EQ requires an independently designed/integrated audio layer.
