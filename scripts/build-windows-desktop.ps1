@@ -11,12 +11,15 @@ if (-not $root.StartsWith($prefix, [StringComparison]::OrdinalIgnoreCase) -and
 $project = Join-Path $root 'windows\src\OpenBose.Desktop\OpenBose.Desktop.csproj'
 $tests = Join-Path $root 'windows\tests\OpenBose.Protocol.SmokeTests\OpenBose.Protocol.SmokeTests.csproj'
 $cli = Join-Path $root 'windows\src\OpenBose.Diagnostic\OpenBose.Diagnostic.csproj'
+$audioTests = Join-Path $root 'windows\tests\OpenBose.Audio.SmokeTests\OpenBose.Audio.SmokeTests.csproj'
 if (-not (Test-Path -LiteralPath $project)) { throw "Desktop project not found: $project" }
 Write-Output 'Building native Windows desktop with strict D-only environment...'
 dotnet build $project -c Release --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Windows WPF build failed.' }
 dotnet run --project $tests -c Release
 if ($LASTEXITCODE -ne 0) { throw 'Windows protocol smoke tests failed.' }
+dotnet run --project $audioTests -c Release
+if ($LASTEXITCODE -ne 0) { throw 'Temporary host EQ safety smoke tests failed.' }
 dotnet run --project $cli -c Release -- --help
 if ($LASTEXITCODE -ne 0) { throw 'Read-only diagnostic CLI help smoke failed.' }
 if (-not $SkipPackaging) {

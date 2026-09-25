@@ -15,6 +15,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Offline codec evidence tool](docs/AVDTP_OFFLINE_ANALYSIS.md) — parse one sanitized AVDTP SEP capability/configuration record (SBC, AAC, aptX, aptX HD, LDAC); synthetic test fixtures; **no device I/O**.
 - [Live Windows RFCOMM findings](docs/WINDOWS_DIAGNOSTIC.md) — tested read-only CLI, paired-device WinRT fallback, actual SDP channel mapping and the channel-8 compatibility blocker.
 - [Native Windows desktop](docs/WINDOWS_DESKTOP.md) — WPF paired-device GUI, safe SDP inspection, channel-gated BMAP reads, D-only alpha ZIP build.
+- [Windows temporary host EQ](docs/HOST_EQ_WINDOWS.md) — app-owned WAV playback, independent three-band DSP, exact bypass and no Bose settings writes.
 
 ## Objectives
 
@@ -37,6 +38,10 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 See the research dossier for evidence, detailed comparisons and branch audit.
 
 **Current implementation:** reviewed Windows .NET BMAP parser and smoke tests; Kotlin BMAP module with equivalent allowlist and JUnit fixtures. These components are **offline protocol foundations**, not yet device-connected apps or a codec unlock. Next: add explicitly read-only RFCOMM transports, capture actual NC 700 A2DP advertisements, then implement the Android and Windows interfaces.
+
+## GitHub Actions disabled — local tests only
+
+All three GitHub Actions workflow files were removed from `master` and this active development branch. Historical branches may still contain them and must not be merged wholesale. **Do not add, trigger or consume GitHub Actions:** usage is exhausted. Build, lint, test and package locally under `D:\openBose` after running `scripts/workspace-env.ps1`; commit verified source and results to GitHub without CI. No project temp or cache files are permitted on `C:`.
 
 ## Local development and tests
 
