@@ -13,6 +13,7 @@ $tests = Join-Path $root 'windows\tests\OpenBose.Protocol.SmokeTests\OpenBose.Pr
 $cli = Join-Path $root 'windows\src\OpenBose.Diagnostic\OpenBose.Diagnostic.csproj'
 $audioTests = Join-Path $root 'windows\tests\OpenBose.Audio.SmokeTests\OpenBose.Audio.SmokeTests.csproj'
 if (-not (Test-Path -LiteralPath $project)) { throw "Desktop project not found: $project" }
+& (Join-Path $PSScriptRoot 'check-no-actions.ps1') -RepositoryRoot $root
 Write-Output 'Building native Windows desktop with strict D-only environment...'
 dotnet build $project -c Release --nologo
 if ($LASTEXITCODE -ne 0) { throw 'Windows WPF build failed.' }
