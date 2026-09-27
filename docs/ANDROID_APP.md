@@ -1,7 +1,7 @@
 # Android app — paired-device diagnostics and temporary host EQ
 
-Updated 2026-09-27. Android 8+ (`minSdk 26`), initially targeting the
-Redmi Note 10 5G and a paired Bose NC 700. **The locally compiled debug APK
+Updated 2026-09-28. Android 8+ (`minSdk 26`), initially targeting the
+Redmi Note 10 5G and a paired Bose NC 700. **The locally compiled `0.2.0-alpha` debug APK
 is an alpha, not a validated Bose-control application or codec upgrade.**
 
 ## Implemented and verified locally

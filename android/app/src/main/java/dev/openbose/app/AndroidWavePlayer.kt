@@ -3,6 +3,8 @@ package dev.openbose.app
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.AudioFormat
+import android.media.AudioFocusRequest
+import android.media.AudioManager
 import android.media.AudioTrack
 import android.net.Uri
 import android.os.SystemClock
@@ -33,6 +35,23 @@ internal class AndroidWavePlayer(
     @Volatile private var current: Session? = null
     @Volatile private var gains = doubleArrayOf(0.0, 0.0, 0.0)
     @Volatile private var enabled = false
+    private val mediaAttributes = AudioAttributes.Builder()
+        .setUsage(AudioAttributes.USAGE_MEDIA)
+        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+        .build()
+    private val audioManager =
+        context.getSystemService(Context.AUDIO_SERVICE) as AudioManager
+    private val focusRequest = AudioFocusRequest.Builder(AudioManager.AUDIOFOCUS_GAIN)
+        .setAudioAttributes(mediaAttributes)
+        .setOnAudioFocusChangeListener { change ->
+            when (change) {
+                AudioManager.AUDIOFOCUS_LOSS -> stop()
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT,
+                AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> pause()
+                // Resume after a call only when the user explicitly requests it.
+            }
+        }
+        .build()
 
     fun setEqualizer(bass: Double, mid: Double, treble: Double, active: Boolean) {
         require(listOf(bass, mid, treble).all { it.isFinite() && it in -10.0..10.0 })
@@ -47,12 +66,22 @@ internal class AndroidWavePlayer(
         val previous = current
         if (previous != null && previous.uri == uri && previous.paused.get() &&
             !previous.cancelled.get()) {
+            if (audioManager.requestAudioFocus(focusRequest) !=
+                AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+                notifyCurrent(previous, "Audio focus unavailable; playback remains paused.")
+                return
+            }
             previous.paused.set(false)
             try { previous.track?.play() } catch (_: IllegalStateException) { }
             notifyCurrent(previous, "WAV playback resumed.")
             return
         }
         stop()
+        if (audioManager.requestAudioFocus(focusRequest) !=
+            AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
+            notify("Audio focus unavailable; no WAV audio was started.")
+            return
+        }
         val session = Session(uri)
         current = session
         executor.execute { run(session) }
@@ -72,6 +101,7 @@ internal class AndroidWavePlayer(
         // Stopping the stream also releases a worker blocked in WRITE_BLOCKING.
         try { session.track?.stop() } catch (_: IllegalStateException) { }
         try { session.track?.flush() } catch (_: IllegalStateException) { }
+        audioManager.abandonAudioFocusRequest(focusRequest)
         notify("Stopped. Bose-stored EQ unchanged.")
     }
 
@@ -97,10 +127,7 @@ internal class AndroidWavePlayer(
                 )
                 require(size > 0) { "Float PCM output not supported on this device." }
                 audio = AudioTrack.Builder()
-                    .setAudioAttributes(AudioAttributes.Builder()
-                        .setUsage(AudioAttributes.USAGE_MEDIA)
-                        .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                        .build())
+                    .setAudioAttributes(mediaAttributes)
                     .setAudioFormat(AudioFormat.Builder()
                         .setSampleRate(wav.sampleRate)
                         .setEncoding(AudioFormat.ENCODING_PCM_FLOAT)
@@ -143,7 +170,8 @@ internal class AndroidWavePlayer(
                 var deadline = SystemClock.elapsedRealtime() + 10_000L
                 while (!session.cancelled.get() &&
                     ((audio!!.playbackHeadPosition.toLong()) and 0xFFFF_FFFFL) < totalFrames) {
-                    if (session.paused.get()) deadline += 20L
+                    if (session.paused.get())
+                        deadline = SystemClock.elapsedRealtime() + 10_000L
                     else if (SystemClock.elapsedRealtime() >= deadline) break
                     Thread.sleep(20)
                 }
@@ -161,7 +189,10 @@ internal class AndroidWavePlayer(
             try { audio?.release() } catch (_: Exception) { }
             session.track = null
             session.eq = null
-            if (current === session) current = null
+            if (current === session) {
+                current = null
+                audioManager.abandonAudioFocusRequest(focusRequest)
+            }
         }
     }
 

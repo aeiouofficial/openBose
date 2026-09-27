@@ -15,7 +15,7 @@ Bluetooth connection.
   chunk lengths, sample rate and mono/stereo frame alignment before playback.
 - A streaming `AudioTrack` float PCM renderer plays the file through the
   current Android media output. Play/resume, pause and stop are present.
-  Playback ends and resources are released when the user leaves the screen.
+  Playback ends and resources are released when the user leaves the screen. Android audio focus is acquired before playback; permanent focus loss stops the stream, and transient focus loss pauses it without automatically resuming. The selected WAV and EQ slider positions survive a normal screen rotation.
 - Independent three-band peaking filters (about 100 Hz, 1 kHz and 8 kHz),
   gain limits of -10 to +10 dB, a headroom adjustment and output clamp.
   Host EQ is disabled by default. **Bypass does no signal processing.**
