@@ -36,7 +36,7 @@ Date: 2026-09-23. Target: **Bose NC 700**, Android and Windows. [Research and pr
 
 ## Phase 2 — cross-platform settings and temporary EQ (partially implemented)
 
-Windows now has a locally tested pure .NET temporary host-EQ core with app-owned three-band float PCM processing; a WPF WAV player is being integrated. This is **not** headphone-native EQ, system-wide processing or an activated Bluetooth codec. Android host playback/EQ and validated NC 700 controls are pending. [Windows host EQ design](HOST_EQ_WINDOWS.md).
+Windows has a locally tested WPF WAV player and app-owned, three-band float PCM host EQ. Android now also has a pure Kotlin three-band host-EQ engine, a streaming PCM16 WAV parser and an app-owned AudioTrack player with Play/Pause/Stop, explicit bypass and a document picker. The Kotlin DSP/parser unit tests pass, and the Android debug APK assembles and passes Android Lint and the packaged-permissions audit locally; Android/NC 700 device acceptance remains a separate gate. Neither platform's temporary EQ modifies headphone-native EQ, intercepts other applications' audio or activates Bluetooth codecs. [Windows host EQ](HOST_EQ_WINDOWS.md), [Android host EQ](ANDROID_HOST_EQ.md).
 
 - Native Android device discovery/status, audited settings and EQ for **app-owned playback** initially.
 - Windows RFCOMM controls plus app-owned playback EQ initially; system-wide EQ requires an independently designed/integrated audio layer.
@@ -68,7 +68,7 @@ Windows now has a locally tested pure .NET temporary host-EQ core with app-owned
 
 **Gate P4:** headphone advertises codec, host negotiates it and headphone audibly decodes it; rollback demonstrated. Otherwise feature remains experimental/blocked.
 
-## Phase 5 — release readiness (not started)
+## Phase 5 — release readiness (alpha packaging implemented; hardware release gates outstanding)
 
 - Automated parser and platform tests, HCI/BMAP capture fixtures, permission gates, crash recovery, manual device matrix, package/signing and traceable README/release notes.
 - Structured logs: trace/correlation ID, operation, location, device model/firmware, result, impact, cause/exception, fallback/follow-up and Info/Warning/Critical. Default privacy: redacted MACs/serials and never record private audio.
@@ -79,7 +79,7 @@ Windows now has a locally tested pure .NET temporary host-EQ core with app-owned
 - No actual NC 700 codec advertisement or HCI baseline captured.
 - No proven NC 700 aptX/LDAC decoder activation command, RAM loader or custom firmware recovery method.
 - Generic bose-dfu **excludes** NC 700; iclemens' alternative updater is only partially documented.
-- Android and Windows implementation, actual-device tests, offline firmware binary analysis and second-fork inspection still pending.
+- Android/Windows native-control transport mapping, real-device audio/permission/reconnect acceptance, offline firmware binary analysis and second-fork inspection are still pending. Both platforms have independently implemented app-owned host WAV players, but those do not replace the Bose native-control or codec gates.
 
 ## Next work item
 

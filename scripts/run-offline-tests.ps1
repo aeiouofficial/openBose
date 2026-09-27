@@ -23,7 +23,7 @@ if (-not $SkipWindows) {
     Assert-LastExit 'Windows host-EQ DSP safety tests'
 }
 if (-not $SkipAndroid) {
-    Write-Output '[3/3] Android Kotlin/JUnit BMAP tests'
+    Write-Output '[3/3] Android Kotlin/JUnit BMAP and host-EQ tests'
     $jdkMarker = Join-Path 'D:\openBose\.tmp' 'jdk17\.ready'
     $portableGradle = Join-Path 'D:\openBose\.tmp' 'gradle-dist\gradle-8.13\bin\gradle.bat'
     $wrapper = Join-Path $repo 'android\gradlew.bat'
@@ -33,9 +33,9 @@ if (-not $SkipAndroid) {
     $env:JAVA_HOME = (Get-Content -LiteralPath $jdkMarker -Raw).Trim()
     $env:PATH = (Join-Path $env:JAVA_HOME 'bin') + ';' + $env:PATH
     if (Test-Path -LiteralPath $portableGradle) {
-        & $portableGradle -p (Join-Path $repo 'android') --no-daemon --console plain :bmap:test
+        & $portableGradle -p (Join-Path $repo 'android') --no-daemon --console plain :audio:test :bmap:test
     } elseif (Test-Path -LiteralPath $wrapper) {
-        & $wrapper -p (Join-Path $repo 'android') --no-daemon --console plain :bmap:test
+        & $wrapper -p (Join-Path $repo 'android') --no-daemon --console plain :audio:test :bmap:test
     } else { throw 'No Gradle wrapper or project-local Gradle distribution.' }
     Assert-LastExit 'Android Kotlin/JUnit BMAP'
 }

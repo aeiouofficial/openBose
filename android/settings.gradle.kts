@@ -7,6 +7,6 @@ pluginManagement {
 }
 
 rootProject.name = "openBose-android"
-include(":bmap")
+include(":bmap", ":audio")
 // Keep offline protocol tests lightweight. An Android APK build opts in with -PwithAndroidApp=true.
 if (providers.gradleProperty("withAndroidApp").orNull == "true") include(":app")

@@ -3,6 +3,7 @@ package dev.openbose.app
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.bluetooth.BluetoothManager
 import android.content.pm.PackageManager
 import android.os.Build
@@ -53,6 +54,12 @@ class MainActivity : Activity() {
         page.addView(title)
         page.addView(description)
         page.addView(refresh)
+        page.addView(Button(this).apply {
+            text = "Temporary host EQ / WAV player"
+            setOnClickListener {
+                startActivity(Intent(this@MainActivity, HostAudioActivity::class.java))
+            }
+        })
         page.addView(status)
         page.addView(notes)
         val scroll = ScrollView(this)

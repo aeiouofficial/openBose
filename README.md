@@ -2,7 +2,7 @@
 
 Android + Windows Bose NC 700 control app and research project investigating whether the headphones can support additional Bluetooth audio codecs (such as aptX or LDAC) beyond their reported AAC/SBC implementation.
 
-**Status (2026-09-24): Android Kotlin and Windows .NET BMAP protocol test suites pass; the Windows read-only diagnostic successfully enumerates the actual paired NC700's SDP services. On this firmware/Windows pairing, channel 8 is **not advertised**, so live BMAP GET remains blocked pending transport identification. No headphone settings or firmware were modified and no additional codec has been activated.**
+**Status (2026-09-27): Android and Windows now have separately implemented app-owned temporary WAV players with three-band host EQ. The Android debug APK and Windows alpha package build locally; both protocol and DSP test suites pass. The Windows NC 700 baseline does not advertise RFCOMM channel 8, so live BMAP controls remain blocked pending verified transport identification. Real-device Android playback and AVDTP codec-capability capture remain outstanding. No headphone settings or firmware were modified; no new Bluetooth decoder has been activated.**
 
 ## Project documentation
 
@@ -16,6 +16,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Live Windows RFCOMM findings](docs/WINDOWS_DIAGNOSTIC.md) — tested read-only CLI, paired-device WinRT fallback, actual SDP channel mapping and the channel-8 compatibility blocker.
 - [Native Windows desktop](docs/WINDOWS_DESKTOP.md) — WPF paired-device GUI, safe SDP inspection, channel-gated BMAP reads, D-only alpha ZIP build.
 - [Windows temporary host EQ](docs/HOST_EQ_WINDOWS.md) — app-owned WAV playback, independent three-band DSP, exact bypass and no Bose settings writes.
+- [Android temporary host EQ](docs/ANDROID_HOST_EQ.md) — user-selected WAV playback through AudioTrack, local PCM16 decoder, Play/Pause/Stop, three-band DSP and safe bypass.
 
 ## Objectives
 
@@ -37,7 +38,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 
 See the research dossier for evidence, detailed comparisons and branch audit.
 
-**Current implementation:** reviewed Windows .NET BMAP parser and smoke tests; Kotlin BMAP module with equivalent allowlist and JUnit fixtures. These components are **offline protocol foundations**, not yet device-connected apps or a codec unlock. Next: add explicitly read-only RFCOMM transports, capture actual NC 700 A2DP advertisements, then implement the Android and Windows interfaces.
+**Current implementation:** reviewed C# and Kotlin read-only BMAP protocol cores; Windows SDP diagnostics and WPF desktop alpha; Android paired-device diagnostics and locally compiled debug APK; temporary three-band host EQ and app-owned WAV playback on both platforms. Native NC 700 control remains read-only and blocked until a live, correctly mapped transport is verified. Next: install and test the Android APK, complete audio-routing acceptance, collect an actual sanitized NC 700 AVDTP capture and identify the working BMAP control channel.
 
 ## GitHub Actions disabled — local tests only
 
@@ -45,7 +46,7 @@ All three GitHub Actions workflow files were removed from `master` and this acti
 
 ## Local development and tests
 
-In PowerShell, from `D:\openBose`, run `& .\scripts\bootstrap-android.ps1` (downloads an official SHA-256-verified portable JDK 17 into `.tmp` only when missing), followed by `& .\scripts\run-offline-tests.ps1`. The second script checks the identical Kotlin/C# command allowlists and fixtures, runs the Windows .NET smoke tests and executes the Android Kotlin/JUnit suite with Gradle 8.13. The checked-in `android/gradlew.bat` can bootstrap Gradle under the project-local `.tmp` cache if a portable copy is not present. No actual headset communication occurs during these tests.
+In PowerShell, from `D:\openBose`, run `. .\scripts\workspace-env.ps1`, then `& .\scripts\run-offline-tests.ps1` for C#/Kotlin BMAP and host-EQ tests and the offline codec parser. For the Android alpha, use `& .\scripts\build-android-local.ps1` after the project-local JDK 17 and Android SDK have been bootstrapped. For the Windows alpha, use `& .\scripts\build-windows-desktop.ps1`. Both build scripts keep project caches and artifacts on D: and never run GitHub Actions. Hardware-dependent acceptance is separate; tests do not establish that native Bose controls or additional headphone codecs work.
 
 ## Branch workflow
 
