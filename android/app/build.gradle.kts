@@ -27,4 +27,5 @@ android {
 }
 dependencies {
     implementation(project(":bmap"))
+    implementation(project(":audio"))
 }
