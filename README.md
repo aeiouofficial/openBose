@@ -2,7 +2,7 @@
 
 Android + Windows Bose NC 700 control app and research project investigating whether the headphones can support additional Bluetooth audio codecs (such as aptX or LDAC) beyond their reported AAC/SBC implementation.
 
-**Status (2026-09-27): Android and Windows now have separately implemented app-owned temporary WAV players with three-band host EQ. The Android debug APK and Windows alpha package build locally; both protocol and DSP test suites pass. The Windows NC 700 baseline does not advertise RFCOMM channel 8, so live BMAP controls remain blocked pending verified transport identification. Real-device Android playback and AVDTP codec-capability capture remain outstanding. No headphone settings or firmware were modified; no new Bluetooth decoder has been activated.**
+**Status (2026-09-28): Android and Windows now have separately implemented app-owned temporary WAV players with three-band host EQ. The Android debug APK and Windows alpha package build locally; both protocol and DSP test suites pass. The Windows NC 700 baseline does not advertise RFCOMM channel 8, so live BMAP controls remain blocked pending verified transport identification. Real-device Android playback and AVDTP codec-capability capture remain outstanding. No headphone settings or firmware were modified; no new Bluetooth decoder has been activated.**
 
 ## Project documentation
 
@@ -17,6 +17,8 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Native Windows desktop](docs/WINDOWS_DESKTOP.md) — WPF paired-device GUI, safe SDP inspection, channel-gated BMAP reads, D-only alpha ZIP build.
 - [Windows temporary host EQ](docs/HOST_EQ_WINDOWS.md) — app-owned WAV playback, independent three-band DSP, exact bypass and no Bose settings writes.
 - [Android temporary host EQ](docs/ANDROID_HOST_EQ.md) — user-selected WAV playback through AudioTrack, local PCM16 decoder, Play/Pause/Stop, three-band DSP and safe bypass.
+- [Release acceptance matrix](docs/RELEASE_GATES.md) — exact offline gate results, remaining real-device tests and codec/control blockers.
+- [Changelog](CHANGELOG.md) — implemented Android/Windows alpha milestones and explicit non-shipping scope.
 
 ## Objectives
 

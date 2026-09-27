@@ -25,6 +25,9 @@ class HostAudioActivity : Activity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        selectedWav = savedInstanceState?.getString("selectedWav")?.let(Uri::parse)
+        val savedGains = savedInstanceState?.getIntArray("hostEqGains")
+        val savedEnabled = savedInstanceState?.getBoolean("hostEqEnabled") ?: false
         player = AndroidWavePlayer(applicationContext) { message ->
             runOnUiThread {
                 if (!isFinishing && !isDestroyed) status.text = message
@@ -46,7 +49,8 @@ class HostAudioActivity : Activity() {
             "Only affects WAV files played inside OpenBose. " +
                 "Connect the NC 700 in Android Bluetooth settings to route audio to it. " +
                 "Your headphone's stored EQ and Bluetooth codec remain unchanged.", 14f))
-        status = label("Choose a WAV file to begin.", 14f).also {
+        status = label(if (selectedWav == null) "Choose a WAV file to begin."
+            else "WAV selection restored. Press Play to reopen it.", 14f).also {
             it.setTextIsSelectable(true)
             page.addView(it)
         }
@@ -85,9 +89,10 @@ class HostAudioActivity : Activity() {
         val controlList = mutableListOf<SeekBar>()
         for (band in listOf("Bass", "Mid", "Treble")) {
             val value = label("$band: 0 dB", 14f)
+            val saved = savedGains?.getOrNull(controlList.size)?.coerceIn(0, 20) ?: 10
             val seek = SeekBar(this).apply {
                 max = 20
-                progress = 10
+                progress = saved
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
                         control: SeekBar?, position: Int, fromUser: Boolean
@@ -98,6 +103,7 @@ class HostAudioActivity : Activity() {
                     override fun onStopTrackingTouch(control: SeekBar?) = Unit
                 })
             }
+            value.text = "$band: ${saved - 10} dB"
             controlList.add(seek)
             page.addView(value)
             page.addView(seek)
@@ -105,9 +111,17 @@ class HostAudioActivity : Activity() {
         sliders = controlList
         enabled = CheckBox(this).apply {
             text = "Enable temporary OpenBose player EQ"
-            isChecked = false
+            isChecked = savedEnabled
         }
         page.addView(enabled)
+        if (savedInstanceState != null) {
+            player.setEqualizer(
+                (sliders[0].progress - 10).toDouble(),
+                (sliders[1].progress - 10).toDouble(),
+                (sliders[2].progress - 10).toDouble(),
+                enabled.isChecked,
+            )
+        }
         page.addView(Button(this).apply {
             text = "Apply EQ / Bypass"
             setOnClickListener {
@@ -136,6 +150,13 @@ class HostAudioActivity : Activity() {
         status.text = if (selectedWav != null)
             "File selected. Press Play. The file is read only after you press Play."
         else "No file was selected."
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("selectedWav", selectedWav?.toString())
+        outState.putIntArray("hostEqGains", sliders.map { it.progress }.toIntArray())
+        outState.putBoolean("hostEqEnabled", enabled.isChecked)
+        super.onSaveInstanceState(outState)
     }
 
     override fun onStop() {
