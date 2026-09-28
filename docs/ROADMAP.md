@@ -81,6 +81,11 @@ Windows has a locally tested WPF WAV player and app-owned, three-band float PCM 
 - Generic bose-dfu **excludes** NC 700; iclemens' alternative updater is only partially documented.
 - Android/Windows native-control transport mapping, real-device audio/permission/reconnect acceptance, offline firmware binary analysis and second-fork inspection are still pending. Both platforms have independently implemented app-owned host WAV players, but those do not replace the Bose native-control or codec gates.
 
-## Next work item
+## Next work item — Windows first
 
-Capture a **sanitized Android HCI/AVDTP trace** for the actual NC 700 and its current firmware; manually extract each audio sink SEP's service-capability TLVs plus the actual SetConfiguration. Validate them with the project-local offline decoder and correlate with actual AAC playback. Continue the Android read-only UI and Windows transport identification independently. No speculative BMAP traffic on unverified Windows vendor RFCOMM channels.
+1. Connect the real NC 700 as the active Windows media endpoint and run the new passive `OpenBose.CodecProbe` ETW listener to record the **currently negotiated** A2DP codec without sending Bluetooth commands.
+2. Capture a sanitized Windows Bluetooth HCI/AVDTP negotiation for that same unit/firmware and extract every sink SEP codec capability plus `SetConfiguration`. Store raw ETL/HCI only in `D:\openBose\captures\private`.
+3. Interpret AAC/SBC carefully: Windows prefers AAC ahead of aptX Classic, so an AAC stream does not rule out advertised aptX. Use the sink capability record as the decisive advertisement evidence.
+4. Only after the Windows capability result, decide whether an Android capture or a reversible Windows AAC-disable experiment adds evidence. No registry mutation, speculative BMAP traffic, firmware write or third-party A2DP driver is part of the baseline.
+
+See [Windows-first codec feasibility](WINDOWS_CODEC_FEASIBILITY.md).
