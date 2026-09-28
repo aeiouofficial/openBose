@@ -16,9 +16,11 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Live Windows RFCOMM findings](docs/WINDOWS_DIAGNOSTIC.md) — tested read-only CLI, paired-device WinRT fallback, actual SDP channel mapping and the channel-8 compatibility blocker.
 - [Native Windows desktop](docs/WINDOWS_DESKTOP.md) — WPF paired-device GUI, safe SDP inspection, channel-gated BMAP reads, D-only alpha ZIP build.
 - [Windows temporary host EQ](docs/HOST_EQ_WINDOWS.md) — app-owned WAV playback, independent three-band DSP, exact bypass and no Bose settings writes.
+- [Windows-first codec feasibility](docs/WINDOWS_CODEC_FEASIBILITY.md) — passive A2DP negotiated-codec ETW probe, current Windows/Intel host constraints and the AVDTP sink-capability test sequence.
 - [Android temporary host EQ](docs/ANDROID_HOST_EQ.md) — user-selected WAV playback through AudioTrack, local PCM16 decoder, Play/Pause/Stop, three-band DSP and safe bypass.
 - [Release acceptance matrix](docs/RELEASE_GATES.md) — exact offline gate results, remaining real-device tests and codec/control blockers.
 - [Changelog](CHANGELOG.md) — implemented Android/Windows alpha milestones and explicit non-shipping scope.
+- [Third-party notices](THIRD_PARTY_NOTICES.md) — licenses for TraceEvent/NAudio and non-vendored research references.
 
 ## Objectives
 
@@ -40,7 +42,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 
 See the research dossier for evidence, detailed comparisons and branch audit.
 
-**Current implementation:** reviewed C# and Kotlin read-only BMAP protocol cores; Windows SDP diagnostics and WPF desktop alpha; Android paired-device diagnostics and locally compiled debug APK; temporary three-band host EQ and app-owned WAV playback on both platforms. Native NC 700 control remains read-only and blocked until a live, correctly mapped transport is verified. Next: install and test the Android APK, complete audio-routing acceptance, collect an actual sanitized NC 700 AVDTP capture and identify the working BMAP control channel.
+**Current implementation:** reviewed C# and Kotlin read-only BMAP protocol cores; Windows SDP diagnostics and WPF desktop alpha; Android paired-device diagnostics and locally compiled debug APK; temporary three-band host EQ and app-owned WAV playback on both platforms. Native NC 700 control remains read-only and blocked until a live, correctly mapped transport is verified. **Current priority is Windows first:** establish the negotiated A2DP codec on the real NC 700, capture the Windows-side AVDTP sink capability advertisement, and only then decide whether an Android codec experiment adds evidence.
 
 ## GitHub Actions disabled — local tests only
 
@@ -48,7 +50,7 @@ All three GitHub Actions workflow files were removed from `master` and this acti
 
 ## Local development and tests
 
-In PowerShell, from `D:\openBose`, run `. .\scripts\workspace-env.ps1`, then `& .\scripts\run-offline-tests.ps1` for C#/Kotlin BMAP and host-EQ tests and the offline codec parser. For the Android alpha, use `& .\scripts\build-android-local.ps1` after the project-local JDK 17 and Android SDK have been bootstrapped. For the Windows alpha, use `& .\scripts\build-windows-desktop.ps1`. Both build scripts keep project caches and artifacts on D: and never run GitHub Actions. Hardware-dependent acceptance is separate; tests do not establish that native Bose controls or additional headphone codecs work.
+In PowerShell, from `D:\openBose`, run `. .\scripts\workspace-env.ps1`, then `& .\scripts\run-offline-tests.ps1` for C#/Kotlin BMAP and host-EQ tests and the offline codec parser. For the Windows alpha, use `& .\scripts\build-windows-desktop.ps1`; it also builds/tests/packages the passive A2DP codec probe. Use `& .\scripts\probe-windows-a2dp-codec.ps1 -CheckOnly` for a read-only host baseline, then `-Elevate` only when the Bose NC 700 is actively connected as a Windows media endpoint. Android builds remain available through `build-android-local.ps1` but are not the current codec-feasibility priority. All build/cache/capture paths stay on D: and GitHub Actions are not used.
 
 ## Branch workflow
 

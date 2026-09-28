@@ -15,7 +15,9 @@ are disabled because no hosted CI minutes remain.
 | Project privacy | PASS | Local strict D: environment and fail-closed zero-GitHub-Actions script; no audio/MAC data uploaded to GitHub. |
 | Android real-device acceptance | BLOCKED | No authorized Android device was connected over local ADB at the last check. Test audio routing, focus loss, rotation, permission denial/revocation, Bluetooth disconnect and app termination. |
 | NC 700 native settings | BLOCKED | Actual Windows NC 700 SDP baseline did not advertise legacy RFCOMM channel 8. Identify its real control transport, then verify known GET responses before permitting any settings writes. |
-| Bluetooth codec upgrade | UNVERIFIED | Obtain actual A2DP sink advertisements, configuration and audible codec-negotiated playback. Silicon capabilities and Android encoder options alone are insufficient. |
+| Windows negotiated codec baseline | IMPLEMENTED / LIVE TEST PENDING | Passive `Microsoft.Windows.Bluetooth.BthA2dp` ETW listener and codec-ID smoke tests pass locally on feature commit `f6790f4`. The full Windows build/package gate also passed; codec-probe ZIP SHA-256 `D3213F239EB73D56C7E817EDDCD1BE2951827EF8BDCD718265235FD0CE3323C5`. Live ETW requires elevation and an actively connected NC 700 media endpoint. |
+| Windows AVDTP sink capabilities | PENDING | The NC 700 is paired and visible in PnP, but no Bose media AudioEndpoint was active at the latest host check. First connect it as Windows media output; then record negotiated codec and capture the real Discover/GetCapabilities/SetConfiguration exchange before any registry/driver experiment. |
+| Bluetooth codec upgrade | UNVERIFIED | Obtain actual A2DP sink advertisements, configuration and audible codec-negotiated playback. Host codec support alone is insufficient. |
 | Release signing, localization and accessibility | PENDING | Production signing is intentionally not initialized; Android single-language UI still has nonfatal text-resource localization lint warnings. Physical UI, focus and accessibility acceptance remain unverified. |
 
 ## Locally verified merged-source artifacts (28 September 2026)
@@ -46,12 +48,8 @@ not reasons to claim release readiness.
 
 1. Run `scripts/run-offline-tests.ps1`, local Windows package gate and
    `scripts/build-android-local.ps1` against the exact release commit.
-2. Verify an authorized Redmi device's Android version and install the
-   debug APK with the owner's agreement. Test with a real NC 700, actual
-   WAV files at 44.1/48 kHz and both active headphone/speaker routes.
-3. Collect a sanitized, user-approved Android HCI capture of actual NC 700
-   AVDTP sink capabilities. Keep raw logs exclusively under
-   `D:\openBose\captures\private` (ignored by Git).
+2. Complete the **Windows-first** NC 700 A2DP baseline: passive negotiated-codec ETW event plus a sanitized HCI/AVDTP sink-capability capture. Keep raw logs exclusively under `D:\openBose\captures\private` (ignored by Git).
+3. Only after the Windows result, install/test the Android debug APK or collect an Android HCI trace if it provides missing evidence.
 4. Resolve the NC 700's actual control transport. Enable native ANC/EQ
    writes only after audited GET/readback and explicit recovery policy.
 5. Run phone/Windows manual stability, battery, disconnect/reconnect,
