@@ -9,6 +9,7 @@ import android.content.pm.PackageManager
 import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -40,6 +41,7 @@ class MainActivity : Activity() {
             text = getString(R.string.main_permission_prompt)
             textSize = 15f
             setTextIsSelectable(true)
+            accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
         }
         page.addView(Button(this).apply {
             text = getString(R.string.show_paired_devices)
