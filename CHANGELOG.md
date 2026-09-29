@@ -1,5 +1,16 @@
 # OpenBose changelog
 
+## Unreleased — 0.2.0-alpha release hardening
+
+- Added a root `VERSION` source consumed by Android package metadata and Windows assembly/product metadata.
+- Moved Android user-facing text into resources, added TalkBack live-status announcements and accessible labels for all three EQ sliders.
+- Added Windows UI Automation labels for paired-device/service/command controls, host-EQ sliders and live status regions.
+- Versioned local Windows/Android artifacts and added package identity/version checks before they are accepted.
+- Added a clean-commit, D-only local release bundle with SHA-256 provenance manifest and explicit unresolved manual hardware/signing gates.
+- Added an optional Android production-signing gate using a user-owned keystore under ignored `D:\openBose\.secrets`; passwords are consumed through environment variables by `apksigner`.
+- Windows production signing remains blocked until a password-safe D-only signer is selected; unsigned alpha ZIPs are never represented as production installers.
+- Full local build/lint/package verification of this hardening branch is required before merge.
+
 ## 0.2.0-alpha — Android development build (2026-09-28)
 
 - Added an Android app-owned PCM16 WAV player with Play, Pause, Stop,
