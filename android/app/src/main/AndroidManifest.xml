@@ -9,7 +9,8 @@
         android:icon="@drawable/ic_openbose"
         android:usesCleartextTraffic="false"
         android:theme="@android:style/Theme.Material.Light.NoActionBar">
-        <activity android:name=".HostAudioActivity" android:exported="false"\n            android:label="@string/host_eq_activity_label" />
+        <activity android:name=".HostAudioActivity" android:exported="false"
+            android:label="@string/host_eq_activity_label" />
         <activity android:name=".MainActivity" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
