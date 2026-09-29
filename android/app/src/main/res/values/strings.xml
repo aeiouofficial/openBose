@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">OpenBose</string>
+    <string name="main_description">NC700 research | paired-device diagnostics\nRead-only baseline. No firmware changes, settings writes or codec activation.</string>
+    <string name="main_permission_prompt">Tap below to request Bluetooth permission and list paired devices.</string>
+    <string name="show_paired_devices">Show paired Bluetooth devices</string>
+    <string name="open_host_eq">Temporary host EQ / WAV player</string>
+    <string name="codec_evidence_note">Android’s codec choices do not prove headphone compatibility. Actual NC700 codec advertisements require an AVDTP capture.</string>
+    <string name="no_bluetooth_adapter">No Bluetooth adapter.</string>
+    <string name="enable_bluetooth">Enable Bluetooth in Android settings.</string>
+    <string name="no_paired_devices">No paired devices. Pair the NC700 in Android settings first.</string>
+    <plurals name="paired_devices_count">
+        <item quantity="one">Paired device: %d</item>
+        <item quantity="other">Paired devices: %d</item>
+    </plurals>
+    <string name="unnamed_bluetooth_device">Unnamed Bluetooth device</string>
+    <string name="no_cached_uuids">No cached UUIDs; do not infer codec support.</string>
+    <string name="cached_service_uuids">Cached service UUIDs:</string>
+    <string name="bluetooth_permission_missing">Bluetooth permission missing or revoked. Grant it and retry.</string>
+    <string name="bluetooth_discovery_failed">Discovery failed: %1$s</string>
+    <string name="bluetooth_permission_denied">Bluetooth permission denied; no connection attempted.</string>
+
+    <string name="host_eq_title">OpenBose • Temporary phone EQ</string>
+    <string name="host_eq_description">Only affects WAV files played inside OpenBose. Connect the NC 700 in Android Bluetooth settings to route audio to it. Your headphone’s stored EQ and Bluetooth codec remain unchanged.</string>
+    <string name="choose_wav_begin">Choose a WAV file to begin.</string>
+    <string name="wav_selection_restored">WAV selection restored. Press Play to reopen it.</string>
+    <string name="choose_wav_file">Choose WAV file</string>
+    <string name="play_resume">Play / Resume</string>
+    <string name="pause">Pause</string>
+    <string name="stop">Stop</string>
+    <string name="choose_wav_first">Choose a WAV file first.</string>
+    <string name="host_eq_heading">Host EQ: bass / mid / treble (minus ten to plus ten dB)</string>
+    <string name="band_bass">Bass</string>
+    <string name="band_mid">Mid</string>
+    <string name="band_treble">Treble</string>
+    <string name="eq_band_value">%1$s: %2$d dB</string>
+    <string name="eq_band_accessibility">%1$s equalizer, %2$d decibels</string>
+    <string name="enable_host_eq">Enable temporary OpenBose player EQ</string>
+    <string name="apply_bypass_host_eq">Apply EQ / Bypass</string>
+    <string name="host_eq_enabled_status">Host EQ enabled for OpenBose playback only.</string>
+    <string name="host_eq_bypassed_status">Host EQ bypassed; headphone settings unchanged.</string>
+    <string name="host_eq_format_note">Only PCM16 RIFF/WAVE mono or stereo is supported. Playback stops when you leave this screen. No other app’s sound is modified.</string>
+    <string name="file_selected">File selected. Press Play. The file is read only after you press Play.</string>
+    <string name="no_file_selected">No file was selected.</string>
+
+    <string name="player_eq_enabled">Host EQ enabled for this player only.</string>
+    <string name="player_eq_bypassed">Host EQ bypassed. Headphone settings are unchanged.</string>
+    <string name="audio_focus_unavailable_paused">Audio focus unavailable; playback remains paused.</string>
+    <string name="wav_playback_resumed">WAV playback resumed.</string>
+    <string name="audio_focus_unavailable">Audio focus unavailable; no WAV audio was started.</string>
+    <string name="wav_paused">Paused; playback stays inside OpenBose.</string>
+    <string name="wav_stopped">Stopped. Bose-stored EQ unchanged.</string>
+    <string name="selected_file_open_failed">The selected file could not be opened.</string>
+    <string name="float_pcm_unsupported">Float PCM output not supported on this device.</string>
+    <string name="android_audio_init_failed">Android audio output could not be initialized.</string>
+    <string name="wav_playing">Playing WAV via Android’s active output device.</string>
+    <string name="android_audio_output_failed">Android audio output failed.</string>
+    <string name="wav_playback_finished">Playback finished. No headphone settings changed.</string>
+    <string name="wav_playback_stopped_error">Playback stopped: %1$s</string>
+</resources>
