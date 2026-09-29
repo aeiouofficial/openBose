@@ -20,7 +20,7 @@
     <string name="bluetooth_discovery_failed">Discovery failed: %1$s</string>
     <string name="bluetooth_permission_denied">Bluetooth permission denied; no connection attempted.</string>
 
-    <string name="host_eq_title">OpenBose • Temporary phone EQ</string>
+    <string name="host_eq_activity_label">OpenBose Host EQ</string>\n    <string name="host_eq_title">OpenBose • Temporary phone EQ</string>
     <string name="host_eq_description">Only affects WAV files played inside OpenBose. Connect the NC 700 in Android Bluetooth settings to route audio to it. Your headphone’s stored EQ and Bluetooth codec remain unchanged.</string>
     <string name="choose_wav_begin">Choose a WAV file to begin.</string>
     <string name="wav_selection_restored">WAV selection restored. Press Play to reopen it.</string>
