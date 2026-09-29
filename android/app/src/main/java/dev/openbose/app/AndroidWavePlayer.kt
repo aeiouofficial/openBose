@@ -58,8 +58,8 @@ internal class AndroidWavePlayer(
         gains = doubleArrayOf(bass, mid, treble)
         enabled = active
         current?.eq?.configure(bass, mid, treble, active)
-        notifyCurrent(current, if (active) "Host EQ enabled for this player only."
-            else "Host EQ bypassed. Headphone settings are unchanged.")
+        notifyCurrent(current, if (active) context.getString(R.string.player_eq_enabled)
+            else context.getString(R.string.player_eq_bypassed))
     }
 
     fun play(uri: Uri) {
@@ -68,18 +68,18 @@ internal class AndroidWavePlayer(
             !previous.cancelled.get()) {
             if (audioManager.requestAudioFocus(focusRequest) !=
                 AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-                notifyCurrent(previous, "Audio focus unavailable; playback remains paused.")
+                notifyCurrent(previous, context.getString(R.string.audio_focus_unavailable_paused))
                 return
             }
             previous.paused.set(false)
             try { previous.track?.play() } catch (_: IllegalStateException) { }
-            notifyCurrent(previous, "WAV playback resumed.")
+            notifyCurrent(previous, context.getString(R.string.wav_playback_resumed))
             return
         }
         stop()
         if (audioManager.requestAudioFocus(focusRequest) !=
             AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            notify("Audio focus unavailable; no WAV audio was started.")
+            notify(context.getString(R.string.audio_focus_unavailable))
             return
         }
         val session = Session(uri)
@@ -91,7 +91,7 @@ internal class AndroidWavePlayer(
         val session = current ?: return
         session.paused.set(true)
         try { session.track?.pause() } catch (_: IllegalStateException) { }
-        notifyCurrent(session, "Paused; playback stays inside OpenBose.")
+        notifyCurrent(session, context.getString(R.string.wav_paused))
     }
 
     fun stop() {
@@ -102,7 +102,7 @@ internal class AndroidWavePlayer(
         try { session.track?.stop() } catch (_: IllegalStateException) { }
         try { session.track?.flush() } catch (_: IllegalStateException) { }
         audioManager.abandonAudioFocusRequest(focusRequest)
-        notify("Stopped. Bose-stored EQ unchanged.")
+        notify(context.getString(R.string.wav_stopped))
     }
 
     private fun notify(message: String) = report(message)
@@ -116,7 +116,7 @@ internal class AndroidWavePlayer(
         var audio: AudioTrack? = null
         try {
             val input = context.contentResolver.openInputStream(session.uri)
-                ?: throw IllegalArgumentException("The selected file could not be opened.")
+                ?: throw IllegalArgumentException(context.getString(R.string.selected_file_open_failed))
             input.use { stream ->
                 val wav = PcmWave.open(stream)
                 if (session.cancelled.get()) return
@@ -125,7 +125,7 @@ internal class AndroidWavePlayer(
                 val size = AudioTrack.getMinBufferSize(
                     wav.sampleRate, channelMask, AudioFormat.ENCODING_PCM_FLOAT,
                 )
-                require(size > 0) { "Float PCM output not supported on this device." }
+                require(size > 0) { context.getString(R.string.float_pcm_unsupported) }
                 audio = AudioTrack.Builder()
                     .setAudioAttributes(mediaAttributes)
                     .setAudioFormat(AudioFormat.Builder()
@@ -137,7 +137,7 @@ internal class AndroidWavePlayer(
                     .setBufferSizeInBytes(maxOf(size, 16384))
                     .build()
                 require(audio?.state == AudioTrack.STATE_INITIALIZED) {
-                    "Android audio output could not be initialized."
+                    context.getString(R.string.android_audio_init_failed)
                 }
                 session.track = audio
                 val eq = HostEqualizer(wav.sampleRate, wav.channels)
@@ -145,7 +145,7 @@ internal class AndroidWavePlayer(
                 val snapshot = gains
                 eq.configure(snapshot[0], snapshot[1], snapshot[2], enabled)
                 audio?.play()
-                notifyCurrent(session, "Playing WAV via Android's active output device.")
+                notifyCurrent(session, context.getString(R.string.wav_playing))
                 while (!session.cancelled.get()) {
                     if (session.paused.get()) {
                         Thread.sleep(20)
@@ -161,7 +161,9 @@ internal class AndroidWavePlayer(
                         }
                         val count = audio!!.write(
                             chunk, offset, chunk.size - offset, AudioTrack.WRITE_BLOCKING)
-                        if (count <= 0) throw IllegalStateException("Android audio output failed.")
+                        if (count <= 0) throw IllegalStateException(
+                            context.getString(R.string.android_audio_output_failed)
+                        )
                         offset += count
                     }
                 }
@@ -175,14 +177,19 @@ internal class AndroidWavePlayer(
                     else if (SystemClock.elapsedRealtime() >= deadline) break
                     Thread.sleep(20)
                 }
-                notifyCurrent(session, "Playback finished. No headphone settings changed.")
+                notifyCurrent(session, context.getString(R.string.wav_playback_finished))
             }
         } catch (ex: InterruptedException) {
             Thread.currentThread().interrupt()
         } catch (ex: Exception) {
             if (!session.cancelled.get())
-                notifyCurrent(session, "Playback stopped: " +
-                    (ex.message ?: ex.javaClass.simpleName))
+                notifyCurrent(
+                    session,
+                    context.getString(
+                        R.string.wav_playback_stopped_error,
+                        ex.message ?: ex.javaClass.simpleName,
+                    ),
+                )
         } finally {
             try { audio?.pause() } catch (_: Exception) { }
             try { audio?.flush() } catch (_: Exception) { }
