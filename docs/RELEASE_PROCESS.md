@@ -42,8 +42,8 @@ No signing key, keystore, certificate, password or token belongs in Git history 
 
 For a later production release:
 
-- Android: place a user-owned release keystore only under the Git-ignored `D:\\openBose\\.secrets\\` workspace directory and pass it through the explicit local signing step. Never replace the checked debug artifact with a file called “release” unless signature verification and install/upgrade tests pass.
-- Windows: keep any user/organization-owned PFX only under `D:\\openBose\\.secrets\\` and use a D-only signing tool in a dedicated packaging step. Verify the Authenticode signature after packaging and before publication.
+- Android: place a user-owned release keystore only under the Git-ignored `D:\openBose\.secrets\` workspace directory, set the four `OPENBOSE_ANDROID_*` environment variables, then run `scripts/build-android-signed-release.ps1`. The script builds the release variant, signs with the project-local Android SDK `apksigner`, verifies APK Signature Scheme v2, package identity/version and the permission allowlist, and never prints the keystore passwords.
+- Windows: production Authenticode signing remains intentionally **blocked** until a password-safe signer is selected that does not require placing secret material or project state on `C:`. The alpha ZIP remains unsigned and must not be renamed or represented as a production installer.
 - Record only certificate public metadata/fingerprint and artifact hashes in release evidence; never store private-key material.
 
 ## Manual hardware gates before stable
