@@ -14,3 +14,4 @@ captures/private/
 **/obj/
 .vs/
 .gradle/
+.secrets/
