@@ -3,12 +3,12 @@ package dev.openbose.app
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
 import android.bluetooth.BluetoothManager
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
-import android.graphics.Typeface
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -26,50 +26,43 @@ class MainActivity : Activity() {
             orientation = LinearLayout.VERTICAL
             setPadding(padding, padding, padding, padding)
         }
-        val title = TextView(this).apply {
-            text = "OpenBose"
+        page.addView(TextView(this).apply {
+            text = getString(R.string.app_name)
             textSize = 28f
             setTypeface(typeface, Typeface.BOLD)
-        }
-        val description = TextView(this).apply {
-            text = "NC700 research | paired-device diagnostics\n" +
-                "Read-only baseline. No firmware changes, settings writes or codec activation."
+        })
+        page.addView(TextView(this).apply {
+            text = getString(R.string.main_description)
             textSize = 15f
             setPadding(0, padding / 2, 0, padding / 2)
-        }
+        })
         status = TextView(this).apply {
-            text = "Tap below to request Bluetooth permission and list paired devices."
+            text = getString(R.string.main_permission_prompt)
             textSize = 15f
             setTextIsSelectable(true)
         }
-        val refresh = Button(this).apply {
-            text = "Show paired Bluetooth devices"
-            setOnClickListener { requestOrRefresh() }
-        }
-        val notes = TextView(this).apply {
-            text = "\nAndroid's codec choices do not prove headphone compatibility. " +
-                "Actual NC700 codec advertisements require an AVDTP capture."
-            textSize = 13f
-        }
-        page.addView(title)
-        page.addView(description)
-        page.addView(refresh)
         page.addView(Button(this).apply {
-            text = "Temporary host EQ / WAV player"
+            text = getString(R.string.show_paired_devices)
+            setOnClickListener { requestOrRefresh() }
+        })
+        page.addView(Button(this).apply {
+            text = getString(R.string.open_host_eq)
             setOnClickListener {
                 startActivity(Intent(this@MainActivity, HostAudioActivity::class.java))
             }
         })
         page.addView(status)
-        page.addView(notes)
-        val scroll = ScrollView(this)
-        scroll.addView(page)
-        setContentView(scroll)
+        page.addView(TextView(this).apply {
+            text = getString(R.string.codec_evidence_note)
+            textSize = 13f
+        })
+        setContentView(ScrollView(this).apply { addView(page) })
     }
 
     private fun requestOrRefresh() {
         if (Build.VERSION.SDK_INT >= 31 &&
-            checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) != PackageManager.PERMISSION_GRANTED
+            checkSelfPermission(Manifest.permission.BLUETOOTH_CONNECT) !=
+            PackageManager.PERMISSION_GRANTED
         ) {
             requestPermissions(arrayOf(Manifest.permission.BLUETOOTH_CONNECT), permissionRequest)
             return
@@ -82,38 +75,62 @@ class MainActivity : Activity() {
         try {
             val manager = getSystemService(BLUETOOTH_SERVICE) as? BluetoothManager
             val adapter = manager?.adapter
-            if (adapter == null) { status.text = "No Bluetooth adapter."; return }
-            if (!adapter.isEnabled) { status.text = "Enable Bluetooth in Android settings."; return }
+            if (adapter == null) {
+                status.text = getString(R.string.no_bluetooth_adapter)
+                return
+            }
+            if (!adapter.isEnabled) {
+                status.text = getString(R.string.enable_bluetooth)
+                return
+            }
             val devices = adapter.bondedDevices.sortedWith(
                 compareByDescending<android.bluetooth.BluetoothDevice> {
                     it.name?.contains("Bose", ignoreCase = true) == true
                 }.thenBy { it.name ?: "" }
             )
             status.text = if (devices.isEmpty()) {
-                "No paired devices. Pair the NC700 in Android settings first."
+                getString(R.string.no_paired_devices)
             } else buildString {
-                append("Paired devices: "); append(devices.size); append("\n")
+                append(resources.getQuantityString(
+                    R.plurals.paired_devices_count, devices.size, devices.size
+                ))
+                append("\n")
                 for (device in devices) {
-                    append("\n"); append(device.name ?: "Unnamed Bluetooth device"); append("\n")
+                    append("\n")
+                    append(device.name ?: getString(R.string.unnamed_bluetooth_device))
+                    append("\n")
                     val profiles = device.uuids?.map { it.uuid.toString() }.orEmpty()
-                    if (profiles.isEmpty()) append("  No cached UUIDs; do not infer codec support.\n")
-                    else append("  Cached service UUIDs:\n" +
-                        profiles.joinToString("\n") { "  " + it } + "\n")
+                    if (profiles.isEmpty()) {
+                        append("  ")
+                        append(getString(R.string.no_cached_uuids))
+                        append("\n")
+                    } else {
+                        append("  ")
+                        append(getString(R.string.cached_service_uuids))
+                        append("\n")
+                        profiles.forEach {
+                            append("  ")
+                            append(it)
+                            append("\n")
+                        }
+                    }
                 }
             }
-        } catch (ex: SecurityException) {
-            status.text = "Bluetooth permission missing or revoked. Grant it and retry."
+        } catch (_: SecurityException) {
+            status.text = getString(R.string.bluetooth_permission_missing)
         } catch (ex: Exception) {
-            status.text = "Discovery failed: " + ex.javaClass.simpleName
+            status.text = getString(R.string.bluetooth_discovery_failed, ex.javaClass.simpleName)
         }
     }
 
     override fun onRequestPermissionsResult(
-        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode != permissionRequest) return
         if (grantResults.firstOrNull() == PackageManager.PERMISSION_GRANTED) refreshPaired()
-        else status.text = "Bluetooth permission denied; no connection attempted."
+        else status.text = getString(R.string.bluetooth_permission_denied)
     }
 }
