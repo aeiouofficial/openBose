@@ -1,6 +1,12 @@
 <Project>
   <!-- All .NET build outputs remain inside the OpenBose workspace. -->
   <PropertyGroup>
+    <OpenBoseVersion>$([System.IO.File]::ReadAllText('$(MSBuildThisFileDirectory)..\VERSION').Trim())</OpenBoseVersion>
+    <Version>$(OpenBoseVersion)</Version>
+    <InformationalVersion>$(OpenBoseVersion)</InformationalVersion>
+    <AssemblyVersion>0.2.0.0</AssemblyVersion>
+    <FileVersion>0.2.0.0</FileVersion>
+    <Deterministic>true</Deterministic>
     <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)..\.tmp\dotnet\obj\$(MSBuildProjectName)\</BaseIntermediateOutputPath>
     <BaseOutputPath>$(MSBuildThisFileDirectory)..\.tmp\dotnet\bin\$(MSBuildProjectName)\</BaseOutputPath>
   </PropertyGroup>
