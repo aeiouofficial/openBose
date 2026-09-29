@@ -19,6 +19,7 @@ Android + Windows Bose NC 700 control app and research project investigating whe
 - [Windows-first codec feasibility](docs/WINDOWS_CODEC_FEASIBILITY.md) — passive A2DP negotiated-codec ETW probe, current Windows/Intel host constraints and the AVDTP sink-capability test sequence.
 - [Android temporary host EQ](docs/ANDROID_HOST_EQ.md) — user-selected WAV playback through AudioTrack, local PCM16 decoder, Play/Pause/Stop, three-band DSP and safe bypass.
 - [Release acceptance matrix](docs/RELEASE_GATES.md) — exact offline gate results, remaining real-device tests and codec/control blockers.
+- [Local release process](docs/RELEASE_PROCESS.md) — clean-commit D-only build, versioned artifacts, SHA-256 provenance manifest, signing boundary and manual hardware gates.
 - [Changelog](CHANGELOG.md) — implemented Android/Windows alpha milestones and explicit non-shipping scope.
 - [Third-party notices](THIRD_PARTY_NOTICES.md) — licenses for TraceEvent/NAudio and non-vendored research references.
 
