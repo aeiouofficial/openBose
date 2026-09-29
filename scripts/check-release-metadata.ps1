@@ -36,7 +36,9 @@ $manifestPath = Join-Path $root 'android\app\src\main\AndroidManifest.xml'
 $stringsPath = Join-Path $root 'android\app\src\main\res\values\strings.xml'
 [xml]$manifest = Get-Content -LiteralPath $manifestPath -Raw
 [xml]$strings = Get-Content -LiteralPath $stringsPath -Raw
-if ($manifest.manifest.application.label -ne '@string/app_name') {
+$androidNamespace = 'http://schemas.android.com/apk/res/android'
+$applicationLabel = $manifest.manifest.application.GetAttribute('label', $androidNamespace)
+if ($applicationLabel -ne '@string/app_name') {
     throw 'Android application label is not localized through @string/app_name.'
 }
 $stringNames = @($strings.resources.string | ForEach-Object { $_.name })
