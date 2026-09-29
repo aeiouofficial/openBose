@@ -26,6 +26,7 @@ if ($LASTEXITCODE -ne 0 -or $commit -notmatch '^[0-9a-f]{40}$') {
 }
 
 & (Join-Path $root 'scripts\check-no-actions.ps1') -RepositoryRoot $root
+& (Join-Path $root 'scripts\check-release-metadata.ps1') -RepositoryRoot $root
 & (Join-Path $root 'scripts\run-offline-tests.ps1')
 & (Join-Path $root 'scripts\build-windows-desktop.ps1') -RepositoryRoot $root
 & (Join-Path $root 'scripts\build-android-local.ps1') -RepositoryRoot $root
