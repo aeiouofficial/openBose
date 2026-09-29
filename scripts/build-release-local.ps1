@@ -41,11 +41,15 @@ foreach ($path in $required) {
 }
 
 $artifacts = @()
+$distPrefix = $dist.TrimEnd('\') + '\'
 foreach ($path in $required) {
     $item = Get-Item -LiteralPath $path
+    if (-not $item.FullName.StartsWith($distPrefix, [StringComparison]::OrdinalIgnoreCase)) {
+        throw "Artifact escaped release directory: $($item.FullName)"
+    }
     $artifacts += [ordered]@{
         file = $item.Name
-        relativePath = [IO.Path]::GetRelativePath($dist, $item.FullName)
+        relativePath = $item.FullName.Substring($distPrefix.Length)
         bytes = $item.Length
         sha256 = (Get-FileHash -LiteralPath $item.FullName -Algorithm SHA256).Hash
     }
