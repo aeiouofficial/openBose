@@ -3,7 +3,8 @@
   xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
   Title="OpenBose — NC 700 diagnostics" Width="1030" Height="730"
   MinWidth="820" MinHeight="600" WindowStartupLocation="CenterScreen"
-  Background="#0B1727" Foreground="#E1EAF7" FontFamily="Segoe UI">
+  Background="#0B1727" Foreground="#E1EAF7" FontFamily="Segoe UI"
+  AutomationProperties.Name="OpenBose NC 700 diagnostics">
   <Grid Margin="24">
     <Grid.RowDefinitions>
       <RowDefinition Height="Auto"/>
@@ -30,6 +31,7 @@
             <Button x:Name="RefreshButton" Content="Refresh paired devices" Click="Refresh_Click"/>
           </StackPanel>
           <ListBox x:Name="DeviceList" Background="#172E48" Foreground="White"
+            AutomationProperties.Name="Paired Bluetooth devices"
             BorderBrush="#37506A" BorderThickness="1" Margin="0,13,0,0"
             SelectionChanged="DeviceList_SelectionChanged"
             HorizontalContentAlignment="Stretch"/>
@@ -45,6 +47,7 @@
               IsEnabled="False"/>
             <TextBlock Text="RFCOMM services" Margin="0,15,0,8" FontWeight="Bold"/>
             <TextBox x:Name="ServicesText" Text="No services queried." IsReadOnly="True"
+              AutomationProperties.Name="Advertised RFCOMM services"
               FontFamily="Consolas" FontSize="12" TextWrapping="Wrap"
               VerticalScrollBarVisibility="Auto" Height="130" Padding="9"
               Background="#172E48" Foreground="#D6EEFF" BorderBrush="#365574"/>
@@ -53,6 +56,7 @@
               Foreground="#F7C77A" TextWrapping="Wrap" FontSize="12"/>
             <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
               <ComboBox x:Name="CommandList" Width="205" Height="36" VerticalAlignment="Bottom"
+                AutomationProperties.Name="Read-only BMAP diagnostic command"
                 Background="#1D3B56" Foreground="#10243B" SelectedIndex="0">
                 <ComboBoxItem Content="Product ID" Tag="product_id"/>
                 <ComboBoxItem Content="Firmware version" Tag="firmware_version"/>
@@ -94,16 +98,19 @@
                 <StackPanel Orientation="Horizontal">
                   <TextBlock Text="Bass" Width="60" VerticalAlignment="Center"/>
                   <Slider x:Name="BassSlider" Minimum="-10" Maximum="10" Value="0"
+                    AutomationProperties.Name="Bass host equalizer gain in decibels"
                     Width="255" TickFrequency="1" IsSnapToTickEnabled="True"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                   <TextBlock Text="Mid" Width="60" VerticalAlignment="Center"/>
                   <Slider x:Name="MidSlider" Minimum="-10" Maximum="10" Value="0"
+                    AutomationProperties.Name="Mid host equalizer gain in decibels"
                     Width="255" TickFrequency="1" IsSnapToTickEnabled="True"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal">
                   <TextBlock Text="Treble" Width="60" VerticalAlignment="Center"/>
                   <Slider x:Name="TrebleSlider" Minimum="-10" Maximum="10" Value="0"
+                    AutomationProperties.Name="Treble host equalizer gain in decibels"
                     Width="255" TickFrequency="1" IsSnapToTickEnabled="True"/>
                 </StackPanel>
                 <CheckBox x:Name="HostEqEnabled" Content="Enable OpenBose host EQ"
@@ -111,6 +118,7 @@
                 <Button x:Name="ApplyHostEqButton" Content="Apply / Bypass host EQ"
                   Click="ApplyEq_Click"/>
                 <TextBlock x:Name="AudioStatus" Text="Choose a WAV file inside D:\openBose."
+                  AutomationProperties.LiveSetting="Polite"
                   TextWrapping="Wrap" Margin="0,7,0,0" FontSize="12"
                   Foreground="#B9D5E8"/>
               </StackPanel>
@@ -121,6 +129,7 @@
     </Grid>
     <DockPanel Grid.Row="2" Margin="0,13,0,0">
       <TextBlock x:Name="Status" Text="Ready — no Bluetooth requests sent." FontSize="12"
+        AutomationProperties.LiveSetting="Polite"
         Foreground="#A5C9DE"/>
     </DockPanel>
   </Grid>
