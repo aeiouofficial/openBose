@@ -33,29 +33,31 @@ class HostAudioActivity : Activity() {
                 if (!isFinishing && !isDestroyed) status.text = message
             }
         }
+
         val margin = (18 * resources.displayMetrics.density).toInt()
         val page = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             setPadding(margin, margin, margin, margin)
         }
-        fun label(textValue: String, size: Float = 15f): TextView =
+        fun label(textValue: CharSequence, size: Float = 15f): TextView =
             TextView(this).apply {
                 text = textValue
                 textSize = size
                 setPadding(0, margin / 3, 0, margin / 3)
             }
-        page.addView(label("OpenBose • Temporary phone EQ", 24f))
-        page.addView(label(
-            "Only affects WAV files played inside OpenBose. " +
-                "Connect the NC 700 in Android Bluetooth settings to route audio to it. " +
-                "Your headphone's stored EQ and Bluetooth codec remain unchanged.", 14f))
-        status = label(if (selectedWav == null) "Choose a WAV file to begin."
-            else "WAV selection restored. Press Play to reopen it.", 14f).also {
+
+        page.addView(label(getString(R.string.host_eq_title), 24f))
+        page.addView(label(getString(R.string.host_eq_description), 14f))
+        status = label(
+            if (selectedWav == null) getString(R.string.choose_wav_begin)
+            else getString(R.string.wav_selection_restored),
+            14f,
+        ).also {
             it.setTextIsSelectable(true)
             page.addView(it)
         }
         page.addView(Button(this).apply {
-            text = "Choose WAV file"
+            text = getString(R.string.choose_wav_file)
             setOnClickListener {
                 val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
                     addCategory(Intent.CATEGORY_OPENABLE)
@@ -65,52 +67,68 @@ class HostAudioActivity : Activity() {
                 startActivityForResult(intent, pickerCode)
             }
         })
-        val actions = LinearLayout(this).apply {
-            orientation = LinearLayout.HORIZONTAL
-        }
+
+        val actions = LinearLayout(this).apply { orientation = LinearLayout.HORIZONTAL }
         actions.addView(Button(this).apply {
-            text = "Play / Resume"
+            text = getString(R.string.play_resume)
             setOnClickListener {
                 val uri = selectedWav
-                if (uri == null) status.text = "Choose a WAV file first."
+                if (uri == null) status.text = getString(R.string.choose_wav_first)
                 else player.play(uri)
             }
         })
         actions.addView(Button(this).apply {
-            text = "Pause"
+            text = getString(R.string.pause)
             setOnClickListener { player.pause() }
         })
         actions.addView(Button(this).apply {
-            text = "Stop"
+            text = getString(R.string.stop)
             setOnClickListener { player.stop() }
         })
         page.addView(actions)
-        page.addView(label("Host EQ: bass / mid / treble (minus ten to plus ten dB)"))
+        page.addView(label(getString(R.string.host_eq_heading)))
+
         val controlList = mutableListOf<SeekBar>()
-        for (band in listOf("Bass", "Mid", "Treble")) {
-            val value = label("$band: 0 dB", 14f)
-            val saved = savedGains?.getOrNull(controlList.size)?.coerceIn(0, 20) ?: 10
+        val bandNames = listOf(
+            getString(R.string.band_bass),
+            getString(R.string.band_mid),
+            getString(R.string.band_treble),
+        )
+        for (band in bandNames) {
+            val index = controlList.size
+            val saved = savedGains?.getOrNull(index)?.coerceIn(0, 20) ?: 10
+            val initialDb = saved - 10
+            val value = label(getString(R.string.eq_band_value, band, initialDb), 14f)
             val seek = SeekBar(this).apply {
                 max = 20
                 progress = saved
+                contentDescription = getString(
+                    R.string.eq_band_accessibility, band, initialDb
+                )
                 setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
                     override fun onProgressChanged(
-                        control: SeekBar?, position: Int, fromUser: Boolean
+                        control: SeekBar?,
+                        position: Int,
+                        fromUser: Boolean,
                     ) {
-                        value.text = "$band: ${position - 10} dB"
+                        val db = position - 10
+                        value.text = getString(R.string.eq_band_value, band, db)
+                        control?.contentDescription = getString(
+                            R.string.eq_band_accessibility, band, db
+                        )
                     }
                     override fun onStartTrackingTouch(control: SeekBar?) = Unit
                     override fun onStopTrackingTouch(control: SeekBar?) = Unit
                 })
             }
-            value.text = "$band: ${saved - 10} dB"
             controlList.add(seek)
             page.addView(value)
             page.addView(seek)
         }
+
         sliders = controlList
         enabled = CheckBox(this).apply {
-            text = "Enable temporary OpenBose player EQ"
+            text = getString(R.string.enable_host_eq)
             isChecked = savedEnabled
         }
         page.addView(enabled)
@@ -122,8 +140,9 @@ class HostAudioActivity : Activity() {
                 enabled.isChecked,
             )
         }
+
         page.addView(Button(this).apply {
-            text = "Apply EQ / Bypass"
+            text = getString(R.string.apply_bypass_host_eq)
             setOnClickListener {
                 player.setEqualizer(
                     (sliders[0].progress - 10).toDouble(),
@@ -132,13 +151,11 @@ class HostAudioActivity : Activity() {
                     enabled.isChecked,
                 )
                 status.text = if (enabled.isChecked)
-                    "Host EQ enabled for OpenBose playback only."
-                else "Host EQ bypassed; headphone settings unchanged."
+                    getString(R.string.host_eq_enabled_status)
+                else getString(R.string.host_eq_bypassed_status)
             }
         })
-        page.addView(label(
-            "Only PCM16 RIFF/WAVE mono or stereo is supported. " +
-                "Playback stops when you leave this screen. No other app's sound is modified.", 13f))
+        page.addView(label(getString(R.string.host_eq_format_note), 13f))
         setContentView(ScrollView(this).apply { addView(page) })
     }
 
@@ -147,9 +164,8 @@ class HostAudioActivity : Activity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode != pickerCode || resultCode != RESULT_OK) return
         selectedWav = data?.data
-        status.text = if (selectedWav != null)
-            "File selected. Press Play. The file is read only after you press Play."
-        else "No file was selected."
+        status.text = if (selectedWav != null) getString(R.string.file_selected)
+        else getString(R.string.no_file_selected)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
