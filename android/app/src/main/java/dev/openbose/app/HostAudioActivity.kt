@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
@@ -54,6 +55,7 @@ class HostAudioActivity : Activity() {
             14f,
         ).also {
             it.setTextIsSelectable(true)
+            it.accessibilityLiveRegion = View.ACCESSIBILITY_LIVE_REGION_POLITE
             page.addView(it)
         }
         page.addView(Button(this).apply {
