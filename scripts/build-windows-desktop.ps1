@@ -42,7 +42,8 @@ if (-not $SkipPackaging) {
     $desktopExe = Join-Path $dist 'OpenBose.Desktop.exe'
     if (-not (Test-Path -LiteralPath $desktopExe)) { throw 'Published desktop executable missing.' }
     $productVersion = (Get-Item -LiteralPath $desktopExe).VersionInfo.ProductVersion
-    if (-not $productVersion.StartsWith($version, [StringComparison]::OrdinalIgnoreCase)) {
+    if ([string]::IsNullOrWhiteSpace($productVersion) -or
+        -not $productVersion.StartsWith($version, [StringComparison]::OrdinalIgnoreCase)) {
         throw "Windows product version mismatch: expected $version, got $productVersion"
     }
     if (Test-Path -LiteralPath $zip) { Remove-Item -LiteralPath $zip -Force }
@@ -58,7 +59,8 @@ if (-not $SkipPackaging) {
     $codecExe = Join-Path $codecDist 'OpenBose.CodecProbe.exe'
     if (-not (Test-Path -LiteralPath $codecExe)) { throw 'Published codec probe executable missing.' }
     $codecProductVersion = (Get-Item -LiteralPath $codecExe).VersionInfo.ProductVersion
-    if (-not $codecProductVersion.StartsWith($version, [StringComparison]::OrdinalIgnoreCase)) {
+    if ([string]::IsNullOrWhiteSpace($codecProductVersion) -or
+        -not $codecProductVersion.StartsWith($version, [StringComparison]::OrdinalIgnoreCase)) {
         throw "Codec-probe product version mismatch: expected $version, got $codecProductVersion"
     }
     if (Test-Path -LiteralPath $codecZip) { Remove-Item -LiteralPath $codecZip -Force }
